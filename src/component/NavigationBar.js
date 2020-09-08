@@ -12,7 +12,7 @@ export default class NavigationBar extends Component {
     }
 
     componentDidMount() {
-        if (localStorage.getItem("user") && localStorage.getItem("role")) {
+        if (localStorage.getItem("gradingServiceAccessToken")) {
             this.setState({
                 isRegistered: true,
             })
@@ -20,12 +20,11 @@ export default class NavigationBar extends Component {
     }
 
     clearLocaleStorage = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("role");
+        localStorage.removeItem("gradingServiceAccessToken");
         this.setState({
             isRegistered: false,
         });
-        document.location.href = "/";
+      //  document.location.href = "/";
     }
 
     render() {
@@ -42,7 +41,7 @@ export default class NavigationBar extends Component {
                 </Nav>
                 <Nav className="mr-auto">
                     {isRegistered ?
-                        <Link style={{"cursor": "pointer"}} className="nav-link"
+                        <Link style={{"cursor": "pointer"}} className="nav-link" to={"/"}
                               onClick={this.clearLocaleStorage.bind()}>
                             Вийти
                         </Link> :

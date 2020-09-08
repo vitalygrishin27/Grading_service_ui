@@ -9,13 +9,9 @@ import NavigationBar from "./component/NavigationBar";
 
 import {Provider} from "react-redux";
 import {createStore} from "redux";
-import Configuration from "./component/form/Configuration";
-import {rootReducer} from "./component/store/reducers";
-import Logging from "./component/form/Logging";
-
-export const ACTION_CHANGE_CONTEST_NAME = 'ACTION_CHANGE_CONTEST_NAME';
-export const ACTION_CHANGE_LOGIN = 'ACTION_CHANGE_LOGIN';
-export const ACTION_CHANGE_PASSWORD = 'ACTION_CHANGE_PASSWORD';
+import rootReducer from "./component/store/reducers";
+import ConfigurationContainer from "./container/ConfigurationContainer";
+import LoggingContainer from "./container/LoggingContainer";
 
 export const store = createStore(rootReducer);
 
@@ -32,8 +28,8 @@ export default function App() {
                         <Col lg={12} style={marginTop}>
                             <Switch>
                                 <Route path={"/"} exact component={Welcome}/>
-                                <Route path={"/settings"} exact component={Configuration}/>
-                                <Route path={"/login"} exact component={Logging}/>
+                                <Route path={"/settings"} exact component={ConfigurationContainer}/>
+                                <Route path={"/login"} exact component={LoggingContainer}/>
                             </Switch>
                         </Col>
                     </Row>

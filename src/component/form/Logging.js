@@ -1,10 +1,9 @@
 import React, {Component} from "react";
 import {Form, Button} from "react-bootstrap";
-import {bindActionCreators} from "redux";
-import {connect} from "react-redux";
+import {store} from "../../App";
 import axios from 'axios';
-import {changeLogin, changePassword} from "../store/actions";
 import ToastMessage from "../ToastMessage";
+import {options} from "../Welcome";
 
 const createUserType = (login, password) => {
     return {
@@ -13,7 +12,7 @@ const createUserType = (login, password) => {
     }
 }
 
-class Logging extends Component {
+export default class Logging extends Component {
 
     constructor(props) {
         super(props);
@@ -22,33 +21,40 @@ class Logging extends Component {
             error: false,
             message: '',
         };
+        this.changeLogin = this.changeLogin.bind(this);
+        this.changePassword = this.changePassword.bind(this);
+    }
+
+    changeLogin(event) {
+        this.props.changeLogin(event.target.value);
+    }
+
+    changePassword(event) {
+        this.props.changePassword(event.target.value);
     }
 
     tryToLogIn = event => {
         event.preventDefault();
-        const options = {
-            headers: {'Content-Type': 'application/json;charset=UTF-8',}
-        };
 
         let user = createUserType(this.props.login, this.props.password);
         axios.put(localStorage.getItem("host") + "user", JSON.stringify(user), options)
             .then(response => {
-                if (response.data.login) {
+                if (response.data.token) {
                     this.setState({
                         show: true,
                         error: false,
-                        message: 'Ви увійшли до системи з правами: ' + response.data.role
+                        message: 'Ви увійшли до системи'
                     });
-                    localStorage.setItem("user", response.data.login);
-                    localStorage.setItem("role", response.data.role);
+                    localStorage.setItem("gradingServiceAccessToken", response.data.token);
                     setTimeout(() => this.setState({"show": false}), 3000);
                     setTimeout(() => document.location.href = "/", 3000);
-                }else{
+                } else {
                     this.setState({
                         show: true,
                         error: true,
                         message: 'Логін або пароль невірні'
                     });
+                    localStorage.removeItem("gradingServiceAccessToken");
                     setTimeout(() => this.setState({"show": false}), 3000);
                 }
             })
@@ -64,7 +70,7 @@ class Logging extends Component {
     }
 
     render() {
-        const {login, password, changeLogin, changePassword} = this.props;
+        const {login, password} = this.props;
         const {show, error, message} = this.state;
         return (
             <div>
@@ -84,9 +90,7 @@ class Logging extends Component {
                                 className="mx-sm-3"
                                 value={login}
                                 autoComplete="off"
-                                onChange={(event) => {
-                                    changeLogin(event.target.value)
-                                }}
+                                onChange={this.changeLogin}
                                 id="inputLogin"
                                 aria-describedby="inputLoginHelpInline"
                             />
@@ -98,9 +102,7 @@ class Logging extends Component {
                                 className="mx-sm-3"
                                 value={password}
                                 autoComplete="off"
-                                onChange={(event) => {
-                                    changePassword(event.target.value)
-                                }}
+                                onChange={this.changePassword}
                                 id="inputPassword"
                                 aria-describedby="inputPasswordHelpInline"
                             />
@@ -112,22 +114,6 @@ class Logging extends Component {
         );
     }
 }
-
-const mapStateToProps = (state) => {
-    return {
-        login: state.login,
-        password: state.password,
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        changeLogin: bindActionCreators(changeLogin, dispatch),
-        changePassword: bindActionCreators(changePassword, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Logging);
 
 
 
