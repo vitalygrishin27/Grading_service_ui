@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {Form, Button} from "react-bootstrap";
 import axios from 'axios';
-import {options} from "../Welcome";
-import {store} from "../../App";
-import ToastMessage from "../ToastMessage";
+import {options} from "./Welcome";
+import {store} from "../App";
+import ToastMessage from "./ToastMessage";
 
 const createConfigurationType = (configKey, configValue) => {
     return {
@@ -70,7 +70,7 @@ export default class Configuration extends Component {
                     message: 'Конфігурація збережена'
                 });
                 setTimeout(() => this.setState({"show": false}), 3000);
-                setTimeout(() => document.location.href = "/", 3000);
+                setTimeout(() => this.props.history.push('/'), 3000);
             })
             .catch((error) => {
                 console.error("Error" + error);

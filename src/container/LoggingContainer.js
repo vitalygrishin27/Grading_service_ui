@@ -1,13 +1,13 @@
 import React,{Component} from "react";
-import Logging from "../component/form/Logging";
+import Logging from "../component/Logging";
 import {connect} from "react-redux";
 import {changeLogin, changePassword} from "../component/store/logging/actions";
 
 class LoggingContainer extends Component{
     render() {
-        const {login, password, changeLogin, changePassword} = this.props;
+        const {login, password, changeLogin, changePassword, history} = this.props;
         return (
-            <Logging login={login} password ={password} changeLogin={changeLogin} changePassword={changePassword}/>
+            <Logging login={login} password ={password} changeLogin={changeLogin} changePassword={changePassword} history={history}/>
         );
     }
 }

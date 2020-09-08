@@ -8,12 +8,13 @@ import Footer from "./component/Footer";
 import NavigationBar from "./component/NavigationBar";
 
 import {Provider} from "react-redux";
-import {createStore} from "redux";
+import {applyMiddleware, compose, createStore} from "redux";
 import rootReducer from "./component/store/reducers";
 import ConfigurationContainer from "./container/ConfigurationContainer";
 import LoggingContainer from "./container/LoggingContainer";
+import thunk from 'redux-thunk';
 
-export const store = createStore(rootReducer);
+const store = configureStore();
 
 export default function App() {
     const marginTop = {
@@ -37,5 +38,16 @@ export default function App() {
                 <Footer/>
             </Router>
         </Provider>
+    );
+}
+
+function configureStore(initialState){
+    return createStore(
+        rootReducer,
+        initialState,
+        compose(
+            applyMiddleware(thunk),
+            window.devToolsExtension ? window.devToolsExtension() : f => f
+        )
     );
 }
