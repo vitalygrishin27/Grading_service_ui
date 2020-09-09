@@ -55,7 +55,9 @@ export default class Logging extends Component {
                         error: false,
                         message: 'Ви увійшли до системи'
                     });
+                    console.log(response.data);
                     localStorage.setItem("gradingServiceAccessToken", response.data.token);
+                    localStorage.setItem("role", response.data.role);
                     this.changeToken(response.data.token);
                     setTimeout(() => this.setState({"show": false}), 3000);
                     setTimeout(() => this.props.history.push('/'), 3000);

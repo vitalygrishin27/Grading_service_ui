@@ -19,8 +19,13 @@ export default class UserList extends Component {
             isLoading: false,
         };
     }
+
     changeUsers(users) {
         this.props.changeUsers(users);
+    }
+
+    changeUserIdForEdit(userId) {
+        this.props.changeUserIdForEdit(userId);
     }
 
     getAllUsers = () => {
@@ -47,7 +52,7 @@ export default class UserList extends Component {
                         isLoading: false,
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/'), 3000);
+                    setTimeout(() => this.props.history.push('/login'), 3000);
                 } else {
                     this.setState({
                         show: true,
@@ -68,6 +73,11 @@ export default class UserList extends Component {
 
     }
 
+    selectUser(userId) {
+        this.changeUserIdForEdit(userId);
+        this.props.history.push('/user/'+userId);
+    }
+
     render() {
         const {users} = this.props;
         const {show, error, message, isLoading} = this.state;
@@ -83,13 +93,14 @@ export default class UserList extends Component {
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") &&localStorage.getItem("role").match("ADMINISTRATOR") ? "8":"7"}>
+                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "8" : "7"}>
                             <ButtonGroup>
-                                <Link className="btn btn-sm btn-outline-warning"
-                                      to={"/user/-1"}>
+                                <Button className="btn btn-sm btn-outline-warning" style={{"background":"transparent"}}
+                                      //to={"/user/-1"}
+                                        onClick={this.selectUser.bind(this, -1)}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
                                     Додати користувача
-                                </Link>{' '}
+                                </Button>{' '}
                             </ButtonGroup>
                         </td>
                     </tr>
@@ -101,7 +112,7 @@ export default class UserList extends Component {
                         <th>ПIБ</th>
                         <th>Посада</th>
                         <th>Рівень доступу</th>
-                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") &&localStorage.getItem("role").match("ADMINISTRATOR") ?
+                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
                             <th>Дії</th> : ""}
                     </tr>
                     </thead>
@@ -131,10 +142,11 @@ export default class UserList extends Component {
                                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
                                             <td>
                                                 <ButtonGroup>
-                                                    <Link className="btn btn-sm btn-outline-warning"
-                                                          to={"/user/" + user.id}>{' '}
+                                                    <Button className="btn btn-sm btn-outline-warning"
+                                                        // to={"/user/" + user.id}
+                                                            onClick={this.selectUser.bind(this, user.id)}>
                                                         <FontAwesomeIcon icon={faAddressBook}/>
-                                                    </Link>{' '}
+                                                    </Button>{' '}
                                                     <Button size={"sm"} variant={"outline-danger"}
                                                             onClick={this.deleteUser.bind(this, user.id)}><FontAwesomeIcon
                                                         icon={faTrash}/></Button>{' '}

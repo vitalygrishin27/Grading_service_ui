@@ -59,7 +59,7 @@ export default class Configuration extends Component {
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/'), 3000);
+                    setTimeout(() => this.props.history.push('/login'), 3000);
                 }else {
                     this.setState({
                         show: true,
@@ -104,7 +104,7 @@ export default class Configuration extends Component {
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/'), 3000);
+                    setTimeout(() => this.props.history.push('/login'), 3000);
                 }else{
                     this.setState({
                         show: true,

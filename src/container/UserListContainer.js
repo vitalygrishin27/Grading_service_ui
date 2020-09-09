@@ -1,13 +1,17 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {changeUsers} from "../component/store/userList/actions";
+import {changeUserIdForEdit, changeUsers} from "../component/store/userList/actions";
 import UserList from "../component/UserList";
 
 class UserListContainer extends Component {
     render() {
-        const {users, changeUsers, history} = this.props;
+        const {users, userIdForEdit, changeUsers, changeUserIdForEdit, history} = this.props;
         return (
-            <UserList users={users} changeUsers={changeUsers} history={history}/>
+            <UserList users={users}
+                      userIdForEdit={userIdForEdit}
+                      changeUsers={changeUsers}
+                      changeUserIdForEdit={changeUserIdForEdit}
+                      history={history}/>
         );
     }
 }
@@ -15,11 +19,13 @@ class UserListContainer extends Component {
 const mapStateToProps = (state) => {
     return {
         users: state.userList.users,
+        changeUserIdForEdit: state.userList.userIdForEdit,
     }
 }
 
 const mapDispatchToProps = {
     changeUsers: changeUsers,
+    changeUserIdForEdit: changeUserIdForEdit,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserListContainer);
