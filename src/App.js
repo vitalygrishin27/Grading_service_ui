@@ -13,6 +13,7 @@ import rootReducer from "./component/store/reducers";
 import ConfigurationContainer from "./container/ConfigurationContainer";
 import LoggingContainer from "./container/LoggingContainer";
 import thunk from 'redux-thunk';
+import NavigationBarContainer from "./container/NavigationBarContainer";
 
 const store = configureStore();
 
@@ -23,7 +24,7 @@ export default function App() {
     return (
         <Provider store={store}>
             <Router>
-                <NavigationBar/>
+                <NavigationBarContainer/>
                 <Container>
                     <Row>
                         <Col lg={12} style={marginTop}>

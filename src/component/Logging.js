@@ -23,6 +23,7 @@ export default class Logging extends Component {
         };
         this.changeLogin = this.changeLogin.bind(this);
         this.changePassword = this.changePassword.bind(this);
+        this.changeToken = this.changeToken.bind(this);
     }
 
     changeLogin(event) {
@@ -31,6 +32,10 @@ export default class Logging extends Component {
 
     changePassword(event) {
         this.props.changePassword(event.target.value);
+    }
+
+    changeToken(token) {
+        this.props.changeToken(token);
     }
 
     tryToLogIn = event => {
@@ -46,8 +51,9 @@ export default class Logging extends Component {
                         message: 'Ви увійшли до системи'
                     });
                     localStorage.setItem("gradingServiceAccessToken", response.data.token);
+                    this.changeToken(response.data.token);
                     setTimeout(() => this.setState({"show": false}), 3000);
-                    setTimeout(() => document.location.href = "/", 3000);
+                    setTimeout(() => this.props.history.push('/'), 3000);
                 } else {
                     this.setState({
                         show: true,

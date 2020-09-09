@@ -46,11 +46,21 @@ export default class Configuration extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                this.setState({
-                    show: true,
-                    error: true,
-                    message: 'Помилка при завантаженні конфігурації'
-                });
+                console.log(error.response.status);
+                if(error.response.status===403){
+                    this.setState({
+                        show: true,
+                        error: true,
+                        message: 'Сесія була закінчена. Авторизуйтесь!'
+                    });
+                    setTimeout(() => this.props.history.push('/'), 3000);
+                }else {
+                    this.setState({
+                        show: true,
+                        error: true,
+                        message: 'Помилка при завантаженні конфігурації'
+                    });
+                }
                 setTimeout(() => this.setState({"show": false}), 3000);
             });
     };
@@ -74,11 +84,20 @@ export default class Configuration extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                this.setState({
-                    show: true,
-                    error: true,
-                    message: 'Помилка при збереженні конфігурації'
-                });
+                if(error.response.status===403){
+                    this.setState({
+                        show: true,
+                        error: true,
+                        message: 'Сесія була закінчена. Авторизуйтесь!'
+                    });
+                    setTimeout(() => this.props.history.push('/'), 3000);
+                }else{
+                    this.setState({
+                        show: true,
+                        error: true,
+                        message: 'Помилка при збереженні конфігурації'
+                    });
+                }
                 setTimeout(() => this.setState({"show": false}), 3000);
             });
     }

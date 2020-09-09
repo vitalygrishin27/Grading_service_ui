@@ -7,6 +7,7 @@ export default class NavigationBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            token: props.token,
             isRegistered: false,
         };
     }
@@ -14,6 +15,7 @@ export default class NavigationBar extends Component {
     componentDidMount() {
         if (localStorage.getItem("gradingServiceAccessToken")) {
             this.setState({
+                token: this.props.token,
                 isRegistered: true,
             })
         }
@@ -22,25 +24,25 @@ export default class NavigationBar extends Component {
     clearLocaleStorage = () => {
         localStorage.removeItem("gradingServiceAccessToken");
         this.setState({
+            token: '',
             isRegistered: false,
         });
       //  document.location.href = "/";
     }
 
     render() {
-        const {isRegistered} = this.state;
         return (
             <Navbar variant="dark" className={"text-white"} style={{backgroundColor: 'transparent'}}>
                 <Link className="navbar-brand" to={"/"}>
                     <img alt="" src="../gradingService.png" width="100px"/>
                 </Link>
-                <Nav className="mr-auto" style={{"display": isRegistered ? "block" : "none"}}>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken") ? "block" : "none"}}>
                     <Link className="nav-link" to={"/settings"}>
                         Налаштування
                     </Link>
                 </Nav>
                 <Nav className="mr-auto">
-                    {isRegistered ?
+                    {localStorage.getItem("gradingServiceAccessToken") ?
                         <Link style={{"cursor": "pointer"}} className="nav-link" to={"/"}
                               onClick={this.clearLocaleStorage.bind()}>
                             Вийти
