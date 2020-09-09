@@ -41,6 +41,11 @@ export default class NavigationBar extends Component {
                         Налаштування
                     </Link>
                 </Nav>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken") ? "block" : "none"}}>
+                    <Link className="nav-link" to={"/users"}>
+                        Користувачі
+                    </Link>
+                </Nav>
                 <Nav className="mr-auto">
                     {localStorage.getItem("gradingServiceAccessToken") ?
                         <Link style={{"cursor": "pointer"}} className="nav-link" to={"/"}

@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Form, Button} from "react-bootstrap";
 import axios from 'axios';
-import {store} from "../App";
 import ToastMessage from "./ToastMessage";
 
 const createConfigurationType = (configKey, configValue) => {

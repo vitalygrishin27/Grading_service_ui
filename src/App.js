@@ -5,7 +5,6 @@ import {Container, Row, Col} from 'react-bootstrap';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Welcome from "./component/Welcome";
 import Footer from "./component/Footer";
-import NavigationBar from "./component/NavigationBar";
 
 import {Provider} from "react-redux";
 import {applyMiddleware, compose, createStore} from "redux";
@@ -14,6 +13,7 @@ import ConfigurationContainer from "./container/ConfigurationContainer";
 import LoggingContainer from "./container/LoggingContainer";
 import thunk from 'redux-thunk';
 import NavigationBarContainer from "./container/NavigationBarContainer";
+import UserListContainer from "./container/UserListContainer";
 
 const store = configureStore();
 
@@ -32,6 +32,7 @@ export default function App() {
                                 <Route path={"/"} exact component={Welcome}/>
                                 <Route path={"/settings"} exact component={ConfigurationContainer}/>
                                 <Route path={"/login"} exact component={LoggingContainer}/>
+                                <Route path={"/users"} exact component={UserListContainer}/>
                             </Switch>
                         </Col>
                     </Row>
