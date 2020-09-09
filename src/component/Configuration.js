@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Form, Button} from "react-bootstrap";
 import axios from 'axios';
-import {options} from "./Welcome";
 import {store} from "../App";
 import ToastMessage from "./ToastMessage";
 
@@ -35,6 +34,13 @@ export default class Configuration extends Component {
     }
 
     getSettings = () => {
+        const options = {
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Access-Control-Allow-Origin': '*',
+                'gradingServiceAccessToken': localStorage.getItem("gradingServiceAccessToken"),
+            }
+        };
         axios.get(localStorage.getItem("host") + "configuration", options)
             .then(response => {
                 for (let i = 0; i < response.data.length; i++) {
@@ -53,6 +59,7 @@ export default class Configuration extends Component {
                         error: true,
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
+                    localStorage.removeItem("gradingServiceAccessToken");
                     setTimeout(() => this.props.history.push('/'), 3000);
                 }else {
                     this.setState({
@@ -66,6 +73,13 @@ export default class Configuration extends Component {
     };
 
     saveSettings = event => {
+        const options = {
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Access-Control-Allow-Origin': '*',
+                'gradingServiceAccessToken': localStorage.getItem("gradingServiceAccessToken"),
+            }
+        };
         event.preventDefault();
 
         let configurations = [];
@@ -90,6 +104,7 @@ export default class Configuration extends Component {
                         error: true,
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
+                    localStorage.removeItem("gradingServiceAccessToken");
                     setTimeout(() => this.props.history.push('/'), 3000);
                 }else{
                     this.setState({
