@@ -1,8 +1,10 @@
 import React, {Component} from "react";
-import {Form, Button, Col} from "react-bootstrap";
+import {Form, Button, Col, Image} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
 import {getOptions} from "./Welcome";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
 const createUserType = (props) => {
     return {
@@ -79,12 +81,29 @@ export default class User extends Component {
         this.props.changeUserIdForEdit(userIdForEdit);
     }
 
+    fileChose = event => {
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () => {
+            console.log(reader.result);
+
+            this.props.changePhoto(reader.result);
+        }
+        return URL.createObjectURL(event.target.files[0]);
+
+    };
+
+    clearPhoto() {
+        this.props.changePhoto('');
+        document.getElementById('inputPhoto').value='';
+    }
+
     getRoleList = () => {
         axios.get(localStorage.getItem("host") + "roleList", getOptions())
             .then(response => {
                 console.log(response.data);
                 this.changeRoleList(response.data);
-                 if(response.data.length>0) {
+                if (response.data.length > 0) {
                     this.props.changeRole(response.data[0]);
                 }
 
@@ -219,7 +238,7 @@ export default class User extends Component {
                     />
                 </div>
                 <Form className={"text-white text-muted"} onSubmit={this.saveUser}>
-                    <Form.Row >
+                    <Form.Row>
                         <Form.Group as={Col}>
                             <Form.Label column lg={2}>Логін</Form.Label>
                             <Form.Control
@@ -271,7 +290,8 @@ export default class User extends Component {
 
                     <Form.Row>
                         <Form.Group as={Col}>
-                            <Form.Label style={{"white-space":"nowrap"}} column lg={2} htmlFor="inputSecondName">По батькові</Form.Label>
+                            <Form.Label style={{"white-space": "nowrap"}} column lg={2} htmlFor="inputSecondName">По
+                                батькові</Form.Label>
                             <Form.Control
                                 type="text"
                                 className="mx-sm-3"
@@ -296,7 +316,8 @@ export default class User extends Component {
 
                     <Form.Row>
                         <Form.Group as={Col}>
-                            <Form.Label style={{"white-space":"nowrap"}} column lg={2} htmlFor="inputRole">Рівень доступу</Form.Label>
+                            <Form.Label style={{"white-space": "nowrap"}} column lg={2} htmlFor="inputRole">Рівень
+                                доступу</Form.Label>
                             <Form.Control
                                 as="select"
                                 className="mx-sm-3"
@@ -317,12 +338,23 @@ export default class User extends Component {
                             <Form.Control
                                 type="file"
                                 className="mx-sm-3"
-                                value={photo}
-                                onChange={this.changePhoto}
+                                //value={photo}
+                                onChange={this.fileChose}
                                 id="inputPhoto"
                                 aria-describedby="inputPhotoHelpInline"
                             />
                         </Form.Group>
+
+                        <Image style={{"display": this.props.photo ? "inline-block" : "none"}}
+                               src={this.props.photo} rounded width={"50"}
+                               height={"71"}/> &nbsp;&nbsp;
+                        <Button size={"sm"}
+                                variant={"outline-danger"}
+                                style={{"display": this.props.photo ? "inline-block" : "none", "height":"30px"}}
+                                onClick={this.clearPhoto.bind(this)}
+                        >
+                            <FontAwesomeIcon icon={faTrash}/>
+                        </Button>
                     </Form.Row>
                     <Form.Row>
                         <Form.Group as={Col}>
