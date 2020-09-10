@@ -84,15 +84,14 @@ export default class User extends Component {
             .then(response => {
                 console.log(response.data);
                 this.changeRoleList(response.data);
-                for (let i = 0; i < response.data.length; i++) {
-
+                 if(response.data.length>0) {
+                    this.props.changeRole(response.data[0]);
                 }
 
             })
             .catch((error) => {
                 console.error("Error" + error);
-                console.log(error.response.status);
-                if (error.response.status === 403) {
+                if (error.response && error.response.status === 403) {
                     this.setState({
                         show: true,
                         error: true,
@@ -135,7 +134,7 @@ export default class User extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                if (error.response.status === 403) {
+                if (error.response && error.response.status === 403) {
                     this.setState({
                         show: true,
                         error: true,
@@ -177,8 +176,7 @@ export default class User extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                console.log(error.response.status);
-                if (error.response.status === 403) {
+                if (error.response && error.response.status === 403) {
                     this.setState({
                         show: true,
                         error: true,

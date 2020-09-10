@@ -51,8 +51,7 @@ export default class Configuration extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                console.log(error.response.status);
-                if(error.response.status===403){
+                if(error.response && error.response.status===403){
                     this.setState({
                         show: true,
                         error: true,
@@ -97,7 +96,7 @@ export default class Configuration extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                if(error.response.status===403){
+                if(error.response && error.response.status===403){
                     this.setState({
                         show: true,
                         error: true,

@@ -3,16 +3,14 @@ import {Button, Table, Image, ButtonGroup} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
 import {getOptions} from "./Welcome";
-import {Link} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faAddressBook, faPlusCircle, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
 
 export default class UserList extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            /*     users: [],*/
             show: false,
             error: false,
             message: '',
@@ -43,8 +41,7 @@ export default class UserList extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                console.log(error.response.status);
-                if (error.response.status === 403) {
+                if (error.response && error.response.status === 403) {
                     this.setState({
                         show: true,
                         error: true,
@@ -63,19 +60,57 @@ export default class UserList extends Component {
                 }
                 setTimeout(() => this.setState({"show": false}), 3000);
             });
-    };
+    }
 
     componentDidMount() {
         this.getAllUsers();
     }
 
-    deleteUser() {
-
+    deleteUser(userId) {
+        const conf = window.confirm(`Ви впевнені?`);
+        if (conf) {
+            this.setState({
+                isLoading: true,
+            })
+            axios.delete(localStorage.getItem("host") + "user/" + userId, getOptions())
+                .then(response => {
+                    this.setState({
+                        show: true,
+                        error: false,
+                        isLoading: false,
+                        message: 'Користувача було видалено'
+                    })
+                    console.log(response.data);
+                    this.getAllUsers();
+                    setTimeout(() => this.setState({"show": false}), 3000);
+                })
+                .catch((error) => {
+                    console.error("Error" + error);
+                    if (error.response && error.response.status === 403) {
+                        this.setState({
+                            show: true,
+                            error: true,
+                            message: 'Сесія була закінчена. Авторизуйтесь!',
+                            isLoading: false,
+                        });
+                        localStorage.removeItem("gradingServiceAccessToken");
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        this.setState({
+                            show: true,
+                            error: true,
+                            message: 'Помилка при завантаженні списка користувачів',
+                            isLoading: false,
+                        });
+                    }
+                    setTimeout(() => this.setState({"show": false}), 3000);
+                });
+        }
     }
 
     selectUser(userId) {
         this.changeUserIdForEdit(userId);
-        this.props.history.push('/user/'+userId);
+        this.props.history.push('/user/' + userId);
     }
 
     render() {
@@ -95,8 +130,8 @@ export default class UserList extends Component {
                     <tr>
                         <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "8" : "7"}>
                             <ButtonGroup>
-                                <Button className="btn btn-sm btn-outline-warning" style={{"background":"transparent"}}
-                                      //to={"/user/-1"}
+                                <Button className="btn btn-sm btn-outline-warning" style={{"background": "transparent"}}
+                                    //to={"/user/-1"}
                                         onClick={this.selectUser.bind(this, -1)}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
                                     Додати користувача
@@ -120,7 +155,12 @@ export default class UserList extends Component {
                     {
                         users.length === 0 && !isLoading ?
                             <tr align={"center"}>
-                                <td colSpan={"11"}>Користувачі у БД відсутні</td>
+                                <td colSpan={"11"}>Користувачі у БД відсутні
+                                    {'  '}
+                                    <Button size={"sm"} variant={"outline-danger"}
+                                            onClick={this.getAllUsers}><FontAwesomeIcon
+                                        icon={faRedo}/></Button>
+                                </td>
                             </tr> :
                             isLoading ?
                                 <tr align={"center"}>
