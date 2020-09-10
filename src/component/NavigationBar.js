@@ -36,7 +36,10 @@ export default class NavigationBar extends Component {
                 <Link className="navbar-brand" to={"/"}>
                     <img alt="" src="../gradingService.png" width="100px"/>
                 </Link>
-                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken") ? "block" : "none"}}>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken")
+                        && localStorage.getItem("role")
+                        && (localStorage.getItem("role")==="ADMINISTRATOR" ||
+                        localStorage.getItem("role")==="MANAGER") ? "block" : "none"}}>
                     <Link className="nav-link" to={"/settings"}>
                         Налаштування
                     </Link>
