@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Table, Image, ButtonGroup, FormLabel, Form} from "react-bootstrap";
+import {Button, Table, Image, ButtonGroup, FormLabel} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
 import {getOptions} from "./Welcome";
@@ -169,7 +169,7 @@ export default class UserList extends Component {
                                         Додати користувача
                                     </Button>{' '}
                                 </ButtonGroup>
-                            </td> : ''}
+                            </td> : <td hidden/>}
                     </tr>
                     <tr>
                         <th>№</th>
@@ -212,7 +212,7 @@ export default class UserList extends Component {
                                         <td>{user.position}</td>
                                         <td>
                                             {user.contests.map((contest, count) => (
-                                                <FormLabel>
+                                                <FormLabel key={count}>
                                                     <Image src={contest.photo} rounded width={"50"}
                                                            height={"71"}/>{'  '}{contest.name}
                                                 </FormLabel>

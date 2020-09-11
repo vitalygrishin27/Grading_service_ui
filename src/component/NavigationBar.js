@@ -50,7 +50,9 @@ export default class NavigationBar extends Component {
                         Конкурси
                     </Link>
                 </Nav>
-                <Nav className="mr-auto" style={{"display": "block"}}>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken")
+                    && localStorage.getItem("role")
+                    ? "block" : "none"}}>
                     <Link className="nav-link" to={"/users"}>
                         {localStorage.getItem("gradingServiceAccessToken") &&
                         localStorage.getItem("role") &&

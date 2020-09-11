@@ -10,7 +10,7 @@ import {ACTION_CHANGE_USER_ID_FOR_EDIT} from "../user/actions";
 const initialState = {
     users: [],
     userIdForEdit: -1,
-    userForEdit: '',
+    userForEdit: {},
     userForChangeContest: '',
     userIdForChangeContest: -1,
 }

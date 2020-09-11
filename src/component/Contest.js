@@ -140,7 +140,6 @@ export default class Contest extends Component {
     render() {
         const {
             name,
-            photo,
         } = this.props;
         const {show, error, message} = this.state;
         return (

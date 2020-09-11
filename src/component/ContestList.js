@@ -135,8 +135,7 @@ export default class ContestList extends Component {
                 </div>
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
-                    <tr>
-                        {localStorage.getItem("gradingServiceAccessToken")
+                    <tr>{localStorage.getItem("gradingServiceAccessToken")
                         && localStorage.getItem("role")
                         && (localStorage.getItem("role").match("ADMINISTRATOR")
                             || localStorage.getItem("role").match("MANAGER")) ?
@@ -149,15 +148,14 @@ export default class ContestList extends Component {
                                         Додати конкурс
                                     </Button>{' '}
                                 </ButtonGroup>
-                            </td> : ''}
+                            </td> : <td hidden/>}
                     </tr>
-                    <tr>
-                        <th>№</th>
+                    <tr><th>№</th>
                         <th>Фото</th>
                         <th>Назва</th>
                         <th>Учасники</th>
                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
-                            <th>Дії</th> : ""}
+                            <th>Дії</th>:<th hidden/>}
                     </tr>
                     </thead>
                     <tbody>
@@ -194,7 +192,7 @@ export default class ContestList extends Component {
                                                         icon={faTrash}/></Button>{' '}
                                                 </ButtonGroup>
                                             </td>
-                                            : ""}
+                                            : <td hidden/>}
                                     </tr>
                                 ))
                     }

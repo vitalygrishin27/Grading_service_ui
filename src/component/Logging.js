@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Form, Button} from "react-bootstrap";
+import {Form, Button, Col} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
 
@@ -100,10 +100,10 @@ export default class Logging extends Component {
                         message={message}
                     />
                 </div>
-                <Form inline className={"text-white text-muted"} onSubmit={this.tryToLogIn}>
+                <Form className={"text-white text-muted"} onSubmit={this.tryToLogIn}>
                     <Form.Row>
-                        <Form.Group>
-                            <Form.Label htmlFor="inputLogin">Логін</Form.Label>
+                        <Form.Group as={Col}>
+                            <Form.Label column lg={2} htmlFor="inputLogin">Логін</Form.Label>
                             <Form.Control
                                 type="text"
                                 className="mx-sm-3"
@@ -114,8 +114,8 @@ export default class Logging extends Component {
                                 aria-describedby="inputLoginHelpInline"
                             />
                         </Form.Group>
-                        <Form.Group>
-                            <Form.Label htmlFor="inputPassword">Пароль</Form.Label>
+                        <Form.Group as={Col}>
+                            <Form.Label column lg={2} htmlFor="inputPassword">Пароль</Form.Label>
                             <Form.Control
                                 type="password"
                                 className="mx-sm-3"
@@ -126,8 +126,13 @@ export default class Logging extends Component {
                                 aria-describedby="inputPasswordHelpInline"
                             />
                         </Form.Group>
-                        <Button type="submit">Увійти</Button>&nbsp;&nbsp;
-                        <Button variant={"outline-warning"} onClick={this.createNewUser.bind(this)}>Зареєструватися</Button>
+                    </Form.Row>
+                    <Form.Row>
+                        <Form.Group as={Col}>
+                            <Button type="submit">Увійти</Button>&nbsp;&nbsp;
+                            <Button variant={"outline-warning"}
+                                    onClick={this.createNewUser.bind(this)}>Зареєструватися</Button>
+                        </Form.Group>
                     </Form.Row>
                 </Form>
             </div>

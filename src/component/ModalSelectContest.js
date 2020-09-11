@@ -1,14 +1,7 @@
 import React, {Component} from "react";
-import {Button, Modal, Form, Table, Image} from "react-bootstrap";
+import {Button, Modal, Table, Image} from "react-bootstrap";
 import axios from "axios";
 import {getOptions} from "./Welcome";
-
-const createContestToUserType = (props) => {
-    return {
-        userId: props.userIdForChangeContest,
-        contestIds: props.selectedContestIds,
-    }
-}
 
 export default class ModalSelectContest extends Component {
     constructor(props) {
@@ -137,8 +130,9 @@ export default class ModalSelectContest extends Component {
     }
 
     rerenderModal() {
+        let nextCount=this.state.changed+1;
         this.setState({
-            changed: this.state.changed++,
+            changed: nextCount,
         })
     }
 
@@ -152,8 +146,8 @@ export default class ModalSelectContest extends Component {
                     </Modal.Header>
                     <Modal.Body>
                         <Table striped bordered hover variant={"dark"}>
-                            {contests.map((contest) => (
-                                <tr>
+                            {contests.map((contest, count) => (
+                                <tr key={count}>
                                     <td><Image src={contest.photo} rounded width={"50"} height={"71"}/> {'   '}{contest.name}</td>
                                     <td><Button
                                         variant={this.props.selectedContestIds.includes(contest.id) ? 'danger' : 'warning'}

@@ -8,6 +8,7 @@ import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
 const createUserType = (props) => {
     let userToSave = props.userForEdit;
+    userToSave.id=props.userIdForEdit;
     userToSave.login = props.login;
     userToSave.password = props.password;
     userToSave.role = props.role;
@@ -139,7 +140,12 @@ export default class User extends Component {
                 this.props.changeRole(null);
                 this.props.changeUserIdForEdit(-1);
                 setTimeout(() => this.setState({"show": false}), 3000);
-                setTimeout(() => this.props.history.push('/users'), 3000);
+                if(localStorage.getItem("gradingServiceAccessToken")){
+                    setTimeout(() => this.props.history.push('/users'), 3000);
+                }else{
+                    setTimeout(() => this.props.history.push('/'), 3000);
+                }
+
             })
             .catch((error) => {
                 console.error("Error" + error);
@@ -288,7 +294,7 @@ export default class User extends Component {
 
                     <Form.Row>
                         <Form.Group as={Col}>
-                            <Form.Label style={{"white-space": "nowrap"}} column lg={2} htmlFor="inputSecondName">По
+                            <Form.Label style={{"whiteSpace": "nowrap"}} column lg={2} htmlFor="inputSecondName">По
                                 батькові</Form.Label>
                             <Form.Control
                                 type="text"
@@ -314,7 +320,7 @@ export default class User extends Component {
 
                     <Form.Row>
                         <Form.Group as={Col}>
-                            <Form.Label style={{"white-space": "nowrap"}} column lg={2} htmlFor="inputRole">Рівень
+                            <Form.Label style={{"whiteSpace": "nowrap"}} column lg={2} htmlFor="inputRole">Рівень
                                 доступу</Form.Label>
                             <Form.Control
                                 as="select"
@@ -328,10 +334,10 @@ export default class User extends Component {
                                     (role === 'UNDEFINED'
                                         || role === 'PARTICIPANT'
                                     ) ||
-                                    localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role")
+                                    (localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role")
                                     && (localStorage.getItem("role").match("ADMINISTRATOR")
-                                        || localStorage.getItem("role").match("MANAGER")) ?
-                                        <option value={role}>
+                                        || localStorage.getItem("role").match("MANAGER"))) ?
+                                        <option key={count} value={role}>
                                             {role}
                                         </option> : ''
                                 ))}
