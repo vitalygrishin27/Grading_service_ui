@@ -1,13 +1,12 @@
 import React, {Component} from "react";
-import {Button, Table, Image, ButtonGroup, FormLabel, Form} from "react-bootstrap";
+import {Button, Table, Image, ButtonGroup} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
 import {getOptions} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
-import ModalSelectContestContainer from "../container/ModalSelectContestContainer";
 
-export default class UserList extends Component {
+export default class ContestList extends Component {
 
     constructor(props) {
         super(props);
@@ -19,38 +18,26 @@ export default class UserList extends Component {
         };
     }
 
-    changeUsers(users) {
-        this.props.changeUsers(users);
+    changeContests(contests) {
+        this.props.changeContests(contests);
     }
 
-    changeUserIdForEdit(userId) {
-        this.props.changeUserIdForEdit(userId);
+    changeContestIdForEdit(contestId) {
+        this.props.changeContestIdForEdit(contestId);
     }
 
-    changeUserIdForChangeContest(user) {
-        this.props.setSelectedContests(user.contests);
-        let originalSelectedContestIds=[];
-        user.contests.forEach(contest=>{
-            originalSelectedContestIds.push(contest.id);
-        })
-        this.props.setOriginalSelectedContestIds(originalSelectedContestIds);
-        this.props.changeUserIdForChangeContest(user.id);
-        this.props.changeUserForChangeContest(user);
-        this.props.changeShowModal(true);
-    }
-
-    getAllUsers = () => {
+    getAllContests = () => {
         this.setState({
             isLoading: true,
         })
-        axios.get(localStorage.getItem("host") + "user", getOptions())
+        axios.get(localStorage.getItem("host") + "contest", getOptions())
             .then(response => {
                 this.setState({
                     error: false,
                     isLoading: false,
                 })
                 console.log(response.data);
-                this.changeUsers(response.data);
+                this.changeContests(response.data);
             })
             .catch((error) => {
                 console.error("Error" + error);
@@ -67,7 +54,7 @@ export default class UserList extends Component {
                     this.setState({
                         show: true,
                         error: true,
-                        message: 'Помилка при завантаженні списка користувачів',
+                        message: 'Помилка при завантаженні списка конкурсів',
                         isLoading: false,
                     });
                 }
@@ -76,25 +63,25 @@ export default class UserList extends Component {
     }
 
     componentDidMount() {
-        this.getAllUsers();
+        this.getAllContests();
     }
 
-    deleteUser(userId) {
+    deleteContest(contestId) {
         const conf = window.confirm(`Ви впевнені?`);
         if (conf) {
             this.setState({
                 isLoading: true,
             })
-            axios.delete(localStorage.getItem("host") + "user/" + userId, getOptions())
+            axios.delete(localStorage.getItem("host") + "contest/" + contestId, getOptions())
                 .then(response => {
                     this.setState({
                         show: true,
                         error: false,
                         isLoading: false,
-                        message: 'Користувача було видалено'
+                        message: 'Конкурс було видалено'
                     })
                     console.log(response.data);
-                    this.getAllUsers();
+                    this.getAllContests();
                     setTimeout(() => this.setState({"show": false}), 3000);
                 })
                 .catch((error) => {
@@ -112,7 +99,7 @@ export default class UserList extends Component {
                         this.setState({
                             show: true,
                             error: true,
-                            message: 'Помилка при видаленні користувача',
+                            message: 'Помилка при завантаженні списка конкурсів',
                             isLoading: false,
                         });
                     }
@@ -121,13 +108,13 @@ export default class UserList extends Component {
         }
     }
 
-    selectUser(userId) {
-        this.changeUserIdForEdit(userId);
-        this.props.history.push('/user/' + userId);
+    selectContest(contestId) {
+        this.changeContestIdForEdit(contestId);
+        this.props.history.push('/contest/' + contestId);
     }
 
     render() {
-        const {users} = this.props;
+        const {contests} = this.props;
         const {show, error, message, isLoading} = this.state;
         return (
             <div>
@@ -138,17 +125,15 @@ export default class UserList extends Component {
                         message={message}
                     />
                 </div>
-                <ModalSelectContestContainer/>
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "9" : "8"}>
+                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
                             <ButtonGroup>
                                 <Button className="btn btn-sm btn-outline-warning" style={{"background": "transparent"}}
-                                    //to={"/user/-1"}
-                                        onClick={this.selectUser.bind(this, -1)}>
+                                        onClick={this.selectContest.bind(this, -1)}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                    Додати користувача
+                                    Додати конкурс
                                 </Button>{' '}
                             </ButtonGroup>
                         </td>
@@ -156,24 +141,20 @@ export default class UserList extends Component {
                     <tr>
                         <th>№</th>
                         <th>Фото</th>
-                        <th>Логін</th>
-                        <th>Пароль</th>
-                        <th>ПIБ</th>
-                        <th>Посада</th>
-                        <th>Конкурси</th>
-                        <th>Рівень доступу</th>
+                        <th>Назва</th>
+                        <th>Учасники</th>
                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
                             <th>Дії</th> : ""}
                     </tr>
                     </thead>
                     <tbody>
                     {
-                        users.length === 0 && !isLoading ?
+                        contests.length === 0 && !isLoading ?
                             <tr align={"center"}>
-                                <td colSpan={"11"}>Користувачі у БД відсутні
+                                <td colSpan={"11"}>Конкурси у БД відсутні
                                     {'  '}
                                     <Button size={"sm"} variant={"outline-danger"}
-                                            onClick={this.getAllUsers}><FontAwesomeIcon
+                                            onClick={this.getAllContests}><FontAwesomeIcon
                                         icon={faRedo}/></Button>
                                 </td>
                             </tr> :
@@ -181,40 +162,22 @@ export default class UserList extends Component {
                                 <tr align={"center"}>
                                     <td colSpan={"11"}>Завантаження...</td>
                                 </tr> :
-                                users.map((user, count) => (
-                                    <tr key={user.id}>
+                                contests.map((contest, count) => (
+                                    <tr key={contest.id}>
                                         <td>{count + 1}</td>
-                                        <td><Image src={user.photo} rounded width={"50"} height={"71"}/>
+                                        <td><Image src={contest.photo} rounded width={"50"} height={"71"}/>
                                         </td>
-                                        <td>{user.login}</td>
-                                        <td>{user.password}</td>
-                                        <td>
-                                            {user.lastName}
-                                            {' '}{user.firstName}
-                                            {' '}{user.secondName}</td>
-                                        <td>{user.position}</td>
-                                        <td>
-                                            {user.contests.map((contest, count) => (
-                                                <FormLabel>
-                                                    <Image src={contest.photo} rounded width={"50"} height={"71"}/>{'  '}{contest.name}
-                                                </FormLabel>
-                                            ))}
-                                            <Button className="btn btn-sm btn-outline-warning"
-                                                    onClick={this.changeUserIdForChangeContest.bind(this, user)}>
-                                                Обрати конкурси
-                                            </Button>
-                                        </td>
-                                        <td>{user.role}</td>
+                                        <td>{contest.name}</td>
+                                        <td>{contest.name}</td>
                                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
                                             <td>
                                                 <ButtonGroup>
                                                     <Button className="btn btn-sm btn-outline-warning"
-                                                        // to={"/user/" + user.id}
-                                                            onClick={this.selectUser.bind(this, user.id)}>
+                                                            onClick={this.selectContest.bind(this, contest.id)}>
                                                         <FontAwesomeIcon icon={faAddressBook}/>
                                                     </Button>{' '}
                                                     <Button size={"sm"} variant={"outline-danger"}
-                                                            onClick={this.deleteUser.bind(this, user.id)}><FontAwesomeIcon
+                                                            onClick={this.deleteContest.bind(this, contest.id)}><FontAwesomeIcon
                                                         icon={faTrash}/></Button>{' '}
                                                 </ButtonGroup>
                                             </td>

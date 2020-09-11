@@ -1,9 +1,15 @@
-import {ACTION_CHANGE_USERS} from "./actions";
+import {
+    ACTION_CHANGE_SHOW_MODAL, ACTION_CHANGE_USER_FOR_CHANGE_CONTEST,
+    ACTION_CHANGE_USER_ID_FOR_CHANGE_CONTEST,
+    ACTION_CHANGE_USERS
+} from "./actions";
 import {ACTION_CHANGE_USER_ID_FOR_EDIT} from "../user/actions";
 
 const initialState = {
     users: [],
     userIdForEdit: -1,
+    userForChangeContest: '',
+    userIdForChangeContest: -1,
 }
 
 export const userListReducer = (state = initialState, action) => {
@@ -12,6 +18,12 @@ export const userListReducer = (state = initialState, action) => {
             return {...state, users: action.payload}
         case ACTION_CHANGE_USER_ID_FOR_EDIT:
             return {...state, userIdForEdit: action.payload}
+        case ACTION_CHANGE_USER_ID_FOR_CHANGE_CONTEST:
+            return {...state, userIdForChangeContest: action.payload}
+        case ACTION_CHANGE_SHOW_MODAL:
+            return {...state, showModal: action.payload}
+        case ACTION_CHANGE_USER_FOR_CHANGE_CONTEST:
+            return {...state, userForChangeContest: action.payload}
         default:
             break;
     }

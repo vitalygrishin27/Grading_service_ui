@@ -15,6 +15,8 @@ import thunk from 'redux-thunk';
 import NavigationBarContainer from "./container/NavigationBarContainer";
 import UserListContainer from "./container/UserListContainer";
 import UserContainer from "./container/UserContainer";
+import ContestListContainer from "./container/ContestListContainer";
+import ContestContainer from "./container/ContestContainer";
 
 const store = configureStore();
 
@@ -35,6 +37,8 @@ export default function App() {
                                 <Route path={"/login"} exact component={LoggingContainer}/>
                                 <Route path={"/users"} exact component={UserListContainer}/>
                                 <Route path={"/user/:id"} exact component={UserContainer}/>
+                                <Route path={"/contests"} exact component={ContestListContainer}/>
+                                <Route path={"/contest/:id"} exact component={ContestContainer}/>
                             </Switch>
                         </Col>
                     </Row>
