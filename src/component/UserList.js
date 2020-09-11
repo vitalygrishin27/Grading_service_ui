@@ -27,10 +27,14 @@ export default class UserList extends Component {
         this.props.changeUserIdForEdit(userId);
     }
 
+    changeUserForEdit(user) {
+        this.props.changeUserForEdit(user);
+    }
+
     changeUserIdForChangeContest(user) {
         this.props.setSelectedContests(user.contests);
-        let originalSelectedContestIds=[];
-        user.contests.forEach(contest=>{
+        let originalSelectedContestIds = [];
+        user.contests.forEach(contest => {
             originalSelectedContestIds.push(contest.id);
         })
         this.props.setOriginalSelectedContestIds(originalSelectedContestIds);
@@ -62,7 +66,11 @@ export default class UserList extends Component {
                         isLoading: false,
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
+                    if (this.props.history) {
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        setTimeout(() => document.location.href = "/login", 3000);
+                    }
                 } else {
                     this.setState({
                         show: true,
@@ -107,7 +115,11 @@ export default class UserList extends Component {
                             isLoading: false,
                         });
                         localStorage.removeItem("gradingServiceAccessToken");
-                        setTimeout(() => this.props.history.push('/login'), 3000);
+                        if (this.props.history) {
+                            setTimeout(() => this.props.history.push('/login'), 3000);
+                        } else {
+                            setTimeout(() => document.location.href = "/login", 3000);
+                        }
                     } else {
                         this.setState({
                             show: true,
@@ -121,9 +133,10 @@ export default class UserList extends Component {
         }
     }
 
-    selectUser(userId) {
-        this.changeUserIdForEdit(userId);
-        this.props.history.push('/user/' + userId);
+    selectUser(user) {
+        this.changeUserIdForEdit(user.id);
+        this.changeUserForEdit(user);
+        this.props.history.push('/user/' + user.id);
     }
 
     render() {
@@ -142,16 +155,21 @@ export default class UserList extends Component {
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "9" : "8"}>
-                            <ButtonGroup>
-                                <Button className="btn btn-sm btn-outline-warning" style={{"background": "transparent"}}
-                                    //to={"/user/-1"}
-                                        onClick={this.selectUser.bind(this, -1)}>
-                                    <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                    Додати користувача
-                                </Button>{' '}
-                            </ButtonGroup>
-                        </td>
+                        {localStorage.getItem("gradingServiceAccessToken")
+                        && localStorage.getItem("role")
+                        && (localStorage.getItem("role").match("ADMINISTRATOR")
+                            || localStorage.getItem("role").match("MANAGER")) ?
+                            <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "9" : "8"}>
+                                <ButtonGroup>
+                                    <Button className="btn btn-sm btn-outline-warning"
+                                            style={{"background": "transparent"}}
+                                        //to={"/user/-1"}
+                                            onClick={this.selectUser.bind(this, -1)}>
+                                        <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
+                                        Додати користувача
+                                    </Button>{' '}
+                                </ButtonGroup>
+                            </td> : ''}
                     </tr>
                     <tr>
                         <th>№</th>
@@ -162,8 +180,7 @@ export default class UserList extends Component {
                         <th>Посада</th>
                         <th>Конкурси</th>
                         <th>Рівень доступу</th>
-                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
-                            <th>Дії</th> : ""}
+                        <th>Дії</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -196,7 +213,8 @@ export default class UserList extends Component {
                                         <td>
                                             {user.contests.map((contest, count) => (
                                                 <FormLabel>
-                                                    <Image src={contest.photo} rounded width={"50"} height={"71"}/>{'  '}{contest.name}
+                                                    <Image src={contest.photo} rounded width={"50"}
+                                                           height={"71"}/>{'  '}{contest.name}
                                                 </FormLabel>
                                             ))}
                                             <Button className="btn btn-sm btn-outline-warning"
@@ -205,20 +223,18 @@ export default class UserList extends Component {
                                             </Button>
                                         </td>
                                         <td>{user.role}</td>
-                                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
-                                            <td>
-                                                <ButtonGroup>
-                                                    <Button className="btn btn-sm btn-outline-warning"
-                                                        // to={"/user/" + user.id}
-                                                            onClick={this.selectUser.bind(this, user.id)}>
-                                                        <FontAwesomeIcon icon={faAddressBook}/>
-                                                    </Button>{' '}
-                                                    <Button size={"sm"} variant={"outline-danger"}
-                                                            onClick={this.deleteUser.bind(this, user.id)}><FontAwesomeIcon
-                                                        icon={faTrash}/></Button>{' '}
-                                                </ButtonGroup>
-                                            </td>
-                                            : ""}
+                                        <td>
+                                            <ButtonGroup>
+                                                <Button className="btn btn-sm btn-outline-warning"
+                                                    // to={"/user/" + user.id}
+                                                        onClick={this.selectUser.bind(this, user)}>
+                                                    <FontAwesomeIcon icon={faAddressBook}/>
+                                                </Button>{' '}
+                                                <Button size={"sm"} variant={"outline-danger"}
+                                                        onClick={this.deleteUser.bind(this, user.id)}><FontAwesomeIcon
+                                                    icon={faTrash}/></Button>{' '}
+                                            </ButtonGroup>
+                                        </td>
                                     </tr>
                                 ))
                     }

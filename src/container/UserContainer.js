@@ -8,6 +8,7 @@ import {
     changePassword, changePhoto, changePosition, changeRole, changeRoleList,
     changeSecondName, changeUserIdForEdit
 } from "../component/store/user/actions";
+import {changeUserForEdit} from "../component/store/userList/actions";
 
 class UserContainer extends Component {
     render() {
@@ -22,6 +23,7 @@ class UserContainer extends Component {
             photo,
             roleList,
             userIdForEdit,
+            userForEdit,
             changeLogin,
             changePassword,
             changeLastName,
@@ -32,6 +34,7 @@ class UserContainer extends Component {
             changePhoto,
             changeRoleList,
             changeUserIdForEdit,
+            changeUserForEdit,
             history
         } = this.props;
         return (
@@ -45,6 +48,7 @@ class UserContainer extends Component {
                   photo={photo}
                   roleList={roleList}
                   userIdForEdit={userIdForEdit}
+                  userForEdit={userForEdit}
                   changeLogin={changeLogin}
                   changePassword={changePassword}
                   changeLastName={changeLastName}
@@ -55,6 +59,7 @@ class UserContainer extends Component {
                   changePhoto={changePhoto}
                   changeRoleList={changeRoleList}
                   changeUserIdForEdit={changeUserIdForEdit}
+                  changeUserForEdit={changeUserForEdit}
                   history={history}/>
         );
     }
@@ -72,6 +77,7 @@ const mapStateToProps = (state) => {
         photo: state.user.photo,
         roleList: state.user.roleList,
         userIdForEdit: state.user.userIdForEdit,
+        userForEdit:state.userList.userForEdit,
     }
 }
 
@@ -86,6 +92,7 @@ const mapDispatchToProps = {
     changePhoto: changePhoto,
     changeRoleList: changeRoleList,
     changeUserIdForEdit: changeUserIdForEdit,
+    changeUserForEdit:changeUserForEdit,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserContainer);

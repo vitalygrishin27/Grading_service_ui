@@ -82,7 +82,11 @@ export default class Contest extends Component {
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
+                    if (this.props.history) {
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        setTimeout(() => document.location.href = "/login", 3000);
+                    }
                 } else {
                     this.setState({
                         show: true,
@@ -116,7 +120,11 @@ export default class Contest extends Component {
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
+                    if (this.props.history) {
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        setTimeout(() => document.location.href = "/login", 3000);
+                    }
                 } else {
                     this.setState({
                         show: true,

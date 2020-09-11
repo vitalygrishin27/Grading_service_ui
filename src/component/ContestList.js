@@ -49,7 +49,11 @@ export default class ContestList extends Component {
                         isLoading: false,
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
+                    if (this.props.history) {
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        setTimeout(() => document.location.href = "/login", 3000);
+                    }
                 } else {
                     this.setState({
                         show: true,
@@ -94,7 +98,11 @@ export default class ContestList extends Component {
                             isLoading: false,
                         });
                         localStorage.removeItem("gradingServiceAccessToken");
-                        setTimeout(() => this.props.history.push('/login'), 3000);
+                        if (this.props.history) {
+                            setTimeout(() => this.props.history.push('/login'), 3000);
+                        } else {
+                            setTimeout(() => document.location.href = "/login", 3000);
+                        }
                     } else {
                         this.setState({
                             show: true,
@@ -128,15 +136,20 @@ export default class ContestList extends Component {
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
-                            <ButtonGroup>
-                                <Button className="btn btn-sm btn-outline-warning" style={{"background": "transparent"}}
-                                        onClick={this.selectContest.bind(this, -1)}>
-                                    <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                    Додати конкурс
-                                </Button>{' '}
-                            </ButtonGroup>
-                        </td>
+                        {localStorage.getItem("gradingServiceAccessToken")
+                        && localStorage.getItem("role")
+                        && (localStorage.getItem("role").match("ADMINISTRATOR")
+                            || localStorage.getItem("role").match("MANAGER")) ?
+                            <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
+                                <ButtonGroup>
+                                    <Button className="btn btn-sm btn-outline-warning"
+                                            style={{"background": "transparent"}}
+                                            onClick={this.selectContest.bind(this, -1)}>
+                                        <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
+                                        Додати конкурс
+                                    </Button>{' '}
+                                </ButtonGroup>
+                            </td> : ''}
                     </tr>
                     <tr>
                         <th>№</th>

@@ -7,17 +7,16 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
 const createUserType = (props) => {
-    return {
-        id: props.userIdForEdit,
-        login: props.login,
-        password: props.password,
-        role: props.role,
-        firstName: props.firstName,
-        secondName: props.secondName,
-        lastName: props.lastName,
-        position: props.position,
-        photo: props.photo,
-    }
+    let userToSave = props.userForEdit;
+    userToSave.login = props.login;
+    userToSave.password = props.password;
+    userToSave.role = props.role;
+    userToSave.firstName = props.firstName;
+    userToSave.secondName = props.secondName;
+    userToSave.lastName = props.lastName;
+    userToSave.position = props.position;
+    userToSave.photo = props.photo;
+    return userToSave;
 }
 
 export default class User extends Component {
@@ -95,7 +94,7 @@ export default class User extends Component {
 
     clearPhoto() {
         this.props.changePhoto('');
-        document.getElementById('inputPhoto').value='';
+        document.getElementById('inputPhoto').value = '';
     }
 
     getRoleList = () => {
@@ -110,21 +109,12 @@ export default class User extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                if (error.response && error.response.status === 403) {
-                    this.setState({
-                        show: true,
-                        error: true,
-                        message: 'Сесія була закінчена. Авторизуйтесь!'
-                    });
-                    localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
-                } else {
-                    this.setState({
-                        show: true,
-                        error: true,
-                        message: 'Помилка при завантаженні конфігурації'
-                    });
-                }
+                this.setState({
+                    show: true,
+                    error: true,
+                    message: 'Помилка при завантаженні конфігурації'
+                });
+
                 setTimeout(() => this.setState({"show": false}), 3000);
             });
     }
@@ -160,7 +150,11 @@ export default class User extends Component {
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
+                    if (this.props.history) {
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        setTimeout(() => document.location.href = "/login", 3000);
+                    }
                 } else {
                     this.setState({
                         show: true,
@@ -184,6 +178,7 @@ export default class User extends Component {
         axios.get(localStorage.getItem("host") + "user/" + userId, getOptions())
             .then(response => {
                 console.log(response.data.login);
+                this.props.changeUserForEdit(response.data);
                 this.props.changeLogin(response.data.login);
                 this.props.changePassword(response.data.password);
                 this.props.changeLastName(response.data.lastName);
@@ -202,7 +197,11 @@ export default class User extends Component {
                         message: 'Сесія була закінчена. Авторизуйтесь!'
                     });
                     localStorage.removeItem("gradingServiceAccessToken");
-                    setTimeout(() => this.props.history.push('/login'), 3000);
+                    if (this.props.history) {
+                        setTimeout(() => this.props.history.push('/login'), 3000);
+                    } else {
+                        setTimeout(() => document.location.href = "/login", 3000);
+                    }
                 } else {
                     this.setState({
                         show: true,
@@ -224,7 +223,6 @@ export default class User extends Component {
             secondName,
             lastName,
             position,
-            photo,
             roleList,
         } = this.props;
         const {show, error, message} = this.state;
@@ -327,9 +325,15 @@ export default class User extends Component {
                                 aria-describedby="inputRoleHelpInline"
                             >
                                 {roleList.map((role, count) => (
-                                    <option value={role}>
-                                        {role}
-                                    </option>
+                                    (role === 'UNDEFINED'
+                                        || role === 'PARTICIPANT'
+                                    ) ||
+                                    localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role")
+                                    && (localStorage.getItem("role").match("ADMINISTRATOR")
+                                        || localStorage.getItem("role").match("MANAGER")) ?
+                                        <option value={role}>
+                                            {role}
+                                        </option> : ''
                                 ))}
                             </Form.Control>
                         </Form.Group>
@@ -338,7 +342,6 @@ export default class User extends Component {
                             <Form.Control
                                 type="file"
                                 className="mx-sm-3"
-                                //value={photo}
                                 onChange={this.fileChose}
                                 id="inputPhoto"
                                 aria-describedby="inputPhotoHelpInline"
@@ -350,7 +353,7 @@ export default class User extends Component {
                                height={"71"}/> &nbsp;&nbsp;
                         <Button size={"sm"}
                                 variant={"outline-danger"}
-                                style={{"display": this.props.photo ? "inline-block" : "none", "height":"30px"}}
+                                style={{"display": this.props.photo ? "inline-block" : "none", "height": "30px"}}
                                 onClick={this.clearPhoto.bind(this)}
                         >
                             <FontAwesomeIcon icon={faTrash}/>

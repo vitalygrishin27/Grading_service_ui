@@ -58,9 +58,10 @@ export default class Logging extends Component {
                     console.log(response.data);
                     localStorage.setItem("gradingServiceAccessToken", response.data.token);
                     localStorage.setItem("role", response.data.role);
+                    localStorage.setItem("login", response.data.login);
                     this.changeToken(response.data.token);
-                    setTimeout(() => this.setState({"show": false}), 3000);
-                    setTimeout(() => this.props.history.push('/'), 3000);
+                    setTimeout(() => this.setState({"show": false}), 1000);
+                    setTimeout(() => this.props.history.push('/'), 1000);
                 } else {
                     this.setState({
                         show: true,
@@ -80,6 +81,11 @@ export default class Logging extends Component {
                 });
                 setTimeout(() => this.setState({"show": false, "error": false}), 3000);
             });
+    }
+
+    createNewUser() {
+        this.props.changeUserIdForEdit(-1);
+        this.props.history.push('/user/-1');
     }
 
     render() {
@@ -120,7 +126,8 @@ export default class Logging extends Component {
                                 aria-describedby="inputPasswordHelpInline"
                             />
                         </Form.Group>
-                        <Button type="submit">Увійти</Button>
+                        <Button type="submit">Увійти</Button>&nbsp;&nbsp;
+                        <Button variant={"outline-warning"} onClick={this.createNewUser.bind(this)}>Зареєструватися</Button>
                     </Form.Row>
                 </Form>
             </div>

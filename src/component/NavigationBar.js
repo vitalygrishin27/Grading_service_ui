@@ -23,11 +23,12 @@ export default class NavigationBar extends Component {
 
     clearLocaleStorage = () => {
         localStorage.removeItem("gradingServiceAccessToken");
+        localStorage.removeItem("role");
+        localStorage.removeItem("login");
         this.setState({
             token: '',
             isRegistered: false,
         });
-      //  document.location.href = "/";
     }
 
     render() {
@@ -49,9 +50,12 @@ export default class NavigationBar extends Component {
                         Конкурси
                     </Link>
                 </Nav>
-                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken") ? "block" : "none"}}>
+                <Nav className="mr-auto" style={{"display": "block"}}>
                     <Link className="nav-link" to={"/users"}>
-                        Користувачі
+                        {localStorage.getItem("gradingServiceAccessToken") &&
+                        localStorage.getItem("role") &&
+                        (localStorage.getItem("role") === 'ADMINISTRATOR' ||
+                        localStorage.getItem("role") === 'MANAGER')?'Користувачі':'Учасники'}
                     </Link>
                 </Nav>
                 <Nav className="mr-auto">

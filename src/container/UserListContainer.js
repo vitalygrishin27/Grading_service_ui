@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {
-    changeShowModal, changeUserForChangeContest,
+    changeShowModal, changeUserForChangeContest, changeUserForEdit,
     changeUserIdForChangeContest,
     changeUserIdForEdit,
     changeUsers
@@ -14,6 +14,7 @@ class UserListContainer extends Component {
         const {
             users,
             userIdForEdit,
+            userForEdit,
             userIdForChangeContest,
             userForChangeContest,
             showModal,
@@ -22,6 +23,7 @@ class UserListContainer extends Component {
 
             changeUsers,
             changeUserIdForEdit,
+            changeUserForEdit,
             changeUserIdForChangeContest,
             changeUserForChangeContest,
             changeShowModal,
@@ -32,12 +34,14 @@ class UserListContainer extends Component {
         return (
             <UserList users={users}
                       userIdForEdit={userIdForEdit}
+                      userForEdit={userForEdit}
                       userIdForChangeContest={userIdForChangeContest}
                       showModal={showModal}
                       selectedContests={selectedContests}
                       originalSelectedContestIds={originalSelectedContestIds}
                       userForChangeContest={userForChangeContest}
                       changeUsers={changeUsers}
+                      changeUserForEdit={changeUserForEdit}
                       changeUserIdForEdit={changeUserIdForEdit}
                       changeUserIdForChangeContest={changeUserIdForChangeContest}
                       changeShowModal={changeShowModal}
@@ -58,6 +62,7 @@ const mapStateToProps = (state) => {
         selectedContests: state.modalSelectContest.selectedContests,
         originalSelectedContestIds: state.modalSelectContest.originalSelectedContestIds,
         userForChangeContest: state.userList.userForChangeContest,
+        userForEdit:state.userList.userForEdit,
     }
 }
 
@@ -69,6 +74,7 @@ const mapDispatchToProps = {
     setSelectedContests: setSelectedContests,
     setOriginalSelectedContestIds: setOriginalSelectedContestIds,
     changeUserForChangeContest: changeUserForChangeContest,
+    changeUserForEdit:changeUserForEdit,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserListContainer);
