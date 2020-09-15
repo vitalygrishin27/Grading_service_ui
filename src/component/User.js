@@ -2,13 +2,17 @@ import React, {Component} from "react";
 import {Form, Button, Col, Image} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {getOptions} from "./Welcome";
+import {
+    getEndpoint,
+    getOptions, USERS_MAIN_ENDPOINT,
+    USERS_ROLE_LIST_GET_ENDPOINT
+} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
 const createUserType = (props) => {
     let userToSave = props.userForEdit;
-    userToSave.id=props.userIdForEdit;
+    userToSave.id = props.userIdForEdit;
     userToSave.login = props.login;
     userToSave.password = props.password;
     userToSave.role = props.role;
@@ -25,6 +29,7 @@ export default class User extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            reload: 0,
             show: false,
             error: false,
             message: '',
@@ -99,7 +104,7 @@ export default class User extends Component {
     }
 
     getRoleList = () => {
-        axios.get(localStorage.getItem("host") + "roleList", getOptions())
+        axios.get(getEndpoint(USERS_ROLE_LIST_GET_ENDPOINT), getOptions())
             .then(response => {
                 console.log(response.data);
                 this.changeRoleList(response.data);
@@ -123,26 +128,25 @@ export default class User extends Component {
     saveUser = event => {
         event.preventDefault();
         let user = createUserType(this.props);
-        axios.post(localStorage.getItem("host") + "user", JSON.stringify(user), getOptions())
+        axios.post(getEndpoint(USERS_MAIN_ENDPOINT), JSON.stringify(user), getOptions())
             .then((res) => {
                 this.setState({
                     show: true,
                     error: false,
                     message: 'Дані користувача збережено!'
                 });
-                this.props.changeLogin(null);
-                this.props.changePassword(null);
-                this.props.changeLastName(null);
-                this.props.changeFirstName(null);
-                this.props.changeSecondName(null);
-                this.props.changePosition(null);
+                this.props.changeLogin('');
+                this.props.changePassword('');
+                this.props.changeLastName('');
+                this.props.changeFirstName('');
+                this.props.changeSecondName('');
+                this.props.changePosition('');
                 this.props.changePhoto(null);
-                this.props.changeRole(null);
                 this.props.changeUserIdForEdit(-1);
                 setTimeout(() => this.setState({"show": false}), 3000);
-                if(localStorage.getItem("gradingServiceAccessToken")){
+                if (localStorage.getItem("gradingServiceAccessToken")) {
                     setTimeout(() => this.props.history.push('/users'), 3000);
-                }else{
+                } else {
                     setTimeout(() => this.props.history.push('/'), 3000);
                 }
 
@@ -177,11 +181,19 @@ export default class User extends Component {
         this.getRoleList();
         if (userIdForEdit !== -1) {
             this.findUserById(userIdForEdit);
+        }else{
+            this.props.changeLogin('');
+            this.props.changePassword('');
+            this.props.changeLastName('');
+            this.props.changeFirstName('');
+            this.props.changeSecondName('');
+            this.props.changePosition('');
+            this.props.changePhoto(null);
         }
     }
 
     findUserById = (userId) => {
-        axios.get(localStorage.getItem("host") + "user/" + userId, getOptions())
+        axios.get(getEndpoint(USERS_MAIN_ENDPOINT) + "/" + userId, getOptions())
             .then(response => {
                 console.log(response.data.login);
                 this.props.changeUserForEdit(response.data);
@@ -335,8 +347,8 @@ export default class User extends Component {
                                         || role === 'PARTICIPANT'
                                     ) ||
                                     (localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role")
-                                    && (localStorage.getItem("role").match("ADMINISTRATOR")
-                                        || localStorage.getItem("role").match("MANAGER"))) ?
+                                        && (localStorage.getItem("role").match("ADMINISTRATOR")
+                                            || localStorage.getItem("role").match("MANAGER"))) ?
                                         <option key={count} value={role}>
                                             {role}
                                         </option> : ''

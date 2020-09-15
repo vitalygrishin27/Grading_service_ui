@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Button, Modal, Table, Image} from "react-bootstrap";
 import axios from "axios";
-import {getOptions} from "./Welcome";
+import {CONTESTS_MAIN_ENDPOINT, getEndpoint, getOptions, USERS_MAIN_ENDPOINT} from "./Welcome";
 
 export default class ModalSelectContest extends Component {
     constructor(props) {
@@ -42,7 +42,7 @@ export default class ModalSelectContest extends Component {
     }
 
     getContestList = () => {
-        axios.get(localStorage.getItem("host") + "contest", getOptions())
+        axios.get(getEndpoint(CONTESTS_MAIN_ENDPOINT), getOptions())
             .then(response => {
                 console.log(response.data);
                 this.changeContests(response.data);
@@ -94,7 +94,7 @@ export default class ModalSelectContest extends Component {
 
     handleSaveAndClose() {
         this.props.userForChangeContest.contests = this.props.selectedContests;
-        axios.post(localStorage.getItem("host") + "user", JSON.stringify(this.props.userForChangeContest), getOptions())
+        axios.post(getEndpoint(USERS_MAIN_ENDPOINT), JSON.stringify(this.props.userForChangeContest), getOptions())
             .then((res) => {
                 this.setState({
                     show: true,
@@ -130,7 +130,7 @@ export default class ModalSelectContest extends Component {
     }
 
     rerenderModal() {
-        let nextCount=this.state.changed+1;
+        let nextCount = this.state.changed + 1;
         this.setState({
             changed: nextCount,
         })
@@ -146,9 +146,11 @@ export default class ModalSelectContest extends Component {
                     </Modal.Header>
                     <Modal.Body>
                         <Table striped bordered hover variant={"dark"}>
+                            <tbody>
                             {contests.map((contest, count) => (
                                 <tr key={count}>
-                                    <td><Image src={contest.photo} rounded width={"50"} height={"71"}/> {'   '}{contest.name}</td>
+                                    <td><Image src={contest.photo} rounded width={"50"}
+                                               height={"71"}/> {'   '}{contest.name}</td>
                                     <td><Button
                                         variant={this.props.selectedContestIds.includes(contest.id) ? 'danger' : 'warning'}
                                         onClick={this.changeContestsInList.bind(this, contest.id)}>
@@ -156,6 +158,7 @@ export default class ModalSelectContest extends Component {
                                     </td>
                                 </tr>
                             ))}
+                            </tbody>
                         </Table>
                     </Modal.Body>
                     <Modal.Footer>

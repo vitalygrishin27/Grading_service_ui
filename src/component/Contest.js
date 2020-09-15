@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Form, Button, Col, Image} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {getOptions} from "./Welcome";
+import {CONTESTS_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
@@ -60,7 +60,7 @@ export default class Contest extends Component {
     saveContest = event => {
         event.preventDefault();
         let contest = createContestType(this.props);
-        axios.post(localStorage.getItem("host") + "contest", JSON.stringify(contest), getOptions())
+        axios.post(getEndpoint(CONTESTS_MAIN_ENDPOINT), JSON.stringify(contest), getOptions())
             .then((res) => {
                 this.setState({
                     show: true,
@@ -106,7 +106,7 @@ export default class Contest extends Component {
     }
 
     findContestById = (contestId) => {
-        axios.get(localStorage.getItem("host") + "contest/" + contestId, getOptions())
+        axios.get(getEndpoint(CONTESTS_MAIN_ENDPOINT) + "/" + contestId, getOptions())
             .then(response => {
                 this.props.changeName(response.data.name);
                 this.props.changePhoto(response.data.photo);

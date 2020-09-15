@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Button, Table, Image, ButtonGroup, FormLabel} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {getOptions} from "./Welcome";
+import {getEndpoint, getOptions, USERS_MAIN_ENDPOINT} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
 import ModalSelectContestContainer from "../container/ModalSelectContestContainer";
@@ -47,7 +47,7 @@ export default class UserList extends Component {
         this.setState({
             isLoading: true,
         })
-        axios.get(localStorage.getItem("host") + "user", getOptions())
+        axios.get(getEndpoint(USERS_MAIN_ENDPOINT), getOptions())
             .then(response => {
                 this.setState({
                     error: false,
@@ -93,7 +93,7 @@ export default class UserList extends Component {
             this.setState({
                 isLoading: true,
             })
-            axios.delete(localStorage.getItem("host") + "user/" + userId, getOptions())
+            axios.delete(getEndpoint(USERS_MAIN_ENDPOINT) + "/" + userId, getOptions())
                 .then(response => {
                     this.setState({
                         show: true,
@@ -139,6 +139,12 @@ export default class UserList extends Component {
         this.props.history.push('/user/' + user.id);
     }
 
+    createNewUser(){
+        this.changeUserIdForEdit(-1);
+        this.changeUserForEdit({});
+        this.props.history.push('/user/-1');
+    }
+
     render() {
         const {users} = this.props;
         const {show, error, message, isLoading} = this.state;
@@ -164,7 +170,7 @@ export default class UserList extends Component {
                                     <Button className="btn btn-sm btn-outline-warning"
                                             style={{"background": "transparent"}}
                                         //to={"/user/-1"}
-                                            onClick={this.selectUser.bind(this, -1)}>
+                                            onClick={this.createNewUser.bind(this)}>
                                         <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
                                         Додати користувача
                                     </Button>{' '}

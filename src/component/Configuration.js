@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Form, Button} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
+import {CONFIGURATIONS_MAIN_ENDPOINT, getEndpoint} from "./Welcome";
 
 const createConfigurationType = (configKey, configValue) => {
     return {
@@ -40,7 +41,7 @@ export default class Configuration extends Component {
                 'gradingServiceAccessToken': localStorage.getItem("gradingServiceAccessToken"),
             }
         };
-        axios.get(localStorage.getItem("host") + "configuration", options)
+        axios.get(getEndpoint(CONFIGURATIONS_MAIN_ENDPOINT), options)
             .then(response => {
                 for (let i = 0; i < response.data.length; i++) {
                     if (response.data[i].configKey === 'contestName') {
@@ -51,7 +52,7 @@ export default class Configuration extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                if(error.response && error.response.status===403){
+                if (error.response && error.response.status === 403) {
                     this.setState({
                         show: true,
                         error: true,
@@ -63,7 +64,7 @@ export default class Configuration extends Component {
                     } else {
                         setTimeout(() => document.location.href = "/login", 3000);
                     }
-                }else {
+                } else {
                     this.setState({
                         show: true,
                         error: true,
@@ -88,7 +89,7 @@ export default class Configuration extends Component {
         configurations
             .push(createConfigurationType("contestName", this.props.contestName));
         axios
-            .post(localStorage.getItem("host") + "configuration", JSON.stringify(createWrapperConfigurationType(configurations)), options)
+            .post(getEndpoint(CONFIGURATIONS_MAIN_ENDPOINT), JSON.stringify(createWrapperConfigurationType(configurations)), options)
             .then((res) => {
                 this.setState({
                     show: true,
@@ -100,7 +101,7 @@ export default class Configuration extends Component {
             })
             .catch((error) => {
                 console.error("Error" + error);
-                if(error.response && error.response.status===403){
+                if (error.response && error.response.status === 403) {
                     this.setState({
                         show: true,
                         error: true,
@@ -112,7 +113,7 @@ export default class Configuration extends Component {
                     } else {
                         setTimeout(() => document.location.href = "/login", 3000);
                     }
-                }else{
+                } else {
                     this.setState({
                         show: true,
                         error: true,

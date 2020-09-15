@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Form, Button, Col} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
+import {getEndpoint, getOptions, USERS_MAIN_ENDPOINT} from "./Welcome";
 
 const createUserType = (login, password) => {
     return {
@@ -38,16 +39,9 @@ export default class Logging extends Component {
 
     tryToLogIn = event => {
         event.preventDefault();
-        const options = {
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Access-Control-Allow-Origin': '*',
-                'gradingServiceAccessToken': localStorage.getItem("gradingServiceAccessToken"),
-            }
-        };
 
         let user = createUserType(this.props.login, this.props.password);
-        axios.put(localStorage.getItem("host") + "user", JSON.stringify(user), options)
+        axios.put(getEndpoint(USERS_MAIN_ENDPOINT), JSON.stringify(user), getOptions())
             .then(response => {
                 if (response.data.token) {
                     this.setState({

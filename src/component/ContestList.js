@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Button, Table, Image, ButtonGroup} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {getOptions} from "./Welcome";
+import {CONTESTS_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
 
@@ -30,7 +30,7 @@ export default class ContestList extends Component {
         this.setState({
             isLoading: true,
         })
-        axios.get(localStorage.getItem("host") + "contest", getOptions())
+        axios.get(getEndpoint(CONTESTS_MAIN_ENDPOINT), getOptions())
             .then(response => {
                 this.setState({
                     error: false,
@@ -76,7 +76,7 @@ export default class ContestList extends Component {
             this.setState({
                 isLoading: true,
             })
-            axios.delete(localStorage.getItem("host") + "contest/" + contestId, getOptions())
+            axios.delete(getEndpoint(CONTESTS_MAIN_ENDPOINT) + "/" + contestId, getOptions())
                 .then(response => {
                     this.setState({
                         show: true,
@@ -136,26 +136,27 @@ export default class ContestList extends Component {
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>{localStorage.getItem("gradingServiceAccessToken")
-                        && localStorage.getItem("role")
-                        && (localStorage.getItem("role").match("ADMINISTRATOR")
-                            || localStorage.getItem("role").match("MANAGER")) ?
-                            <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
-                                <ButtonGroup>
-                                    <Button className="btn btn-sm btn-outline-warning"
-                                            style={{"background": "transparent"}}
-                                            onClick={this.selectContest.bind(this, -1)}>
-                                        <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                        Додати конкурс
-                                    </Button>{' '}
-                                </ButtonGroup>
-                            </td> : <td hidden/>}
+                    && localStorage.getItem("role")
+                    && (localStorage.getItem("role").match("ADMINISTRATOR")
+                        || localStorage.getItem("role").match("MANAGER")) ?
+                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
+                            <ButtonGroup>
+                                <Button className="btn btn-sm btn-outline-warning"
+                                        style={{"background": "transparent"}}
+                                        onClick={this.selectContest.bind(this, -1)}>
+                                    <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
+                                    Додати конкурс
+                                </Button>{' '}
+                            </ButtonGroup>
+                        </td> : <td hidden/>}
                     </tr>
-                    <tr><th>№</th>
+                    <tr>
+                        <th>№</th>
                         <th>Фото</th>
                         <th>Назва</th>
                         <th>Учасники</th>
                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
-                            <th>Дії</th>:<th hidden/>}
+                            <th>Дії</th> : <th hidden/>}
                     </tr>
                     </thead>
                     <tbody>
