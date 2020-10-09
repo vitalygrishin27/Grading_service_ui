@@ -11,7 +11,7 @@ const initialState = {
     users: [],
     userIdForEdit: -1,
     userForEdit: {},
-    userForChangeContest: '',
+    userForChangeContest: {},
     userIdForChangeContest: -1,
 }
 

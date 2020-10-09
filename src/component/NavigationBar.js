@@ -57,7 +57,35 @@ export default class NavigationBar extends Component {
                         {localStorage.getItem("gradingServiceAccessToken") &&
                         localStorage.getItem("role") &&
                         (localStorage.getItem("role") === 'ADMINISTRATOR' ||
-                        localStorage.getItem("role") === 'MANAGER')?'Користувачі':'Учасники'}
+                        localStorage.getItem("role") === 'MANAGER' ||
+                            localStorage.getItem("role") === 'JURY')?'Користувачі':'Мої дані'}
+                    </Link>
+                </Nav>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken")
+                    && localStorage.getItem("role") && (localStorage.getItem("role") === 'ADMINISTRATOR' ||
+                        localStorage.getItem("role") === 'MANAGER')
+                        ? "block" : "none"}}>
+                    <Link className="nav-link" to={"/criteria"}>
+                        Критерії
+                    </Link>
+                </Nav>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken")
+                    && localStorage.getItem("role") && (localStorage.getItem("role") === 'ADMINISTRATOR' ||
+                        localStorage.getItem("role") === 'MANAGER')
+                        ? "block" : "none"}}>
+                    <Link className="nav-link" to={"/categories"}>
+                        Категорії
+                    </Link>
+                </Nav>
+                <Nav className="mr-auto" style={{"display": localStorage.getItem("gradingServiceAccessToken")
+                    && localStorage.getItem("role")
+                        ? "block" : "none"}}>
+                    <Link className="nav-link" to={"/performances"}>
+                        {localStorage.getItem("gradingServiceAccessToken") &&
+                        localStorage.getItem("role") &&
+                        (localStorage.getItem("role") === 'ADMINISTRATOR' ||
+                            localStorage.getItem("role") === 'MANAGER' ||
+                            localStorage.getItem("role") === 'JURY')?'Конкурсні номера':'Мої конкурсні номера'}
                     </Link>
                 </Nav>
                 <Nav className="mr-auto">

@@ -6,6 +6,11 @@ import {userReducer} from "./user/reducers";
 import {contestListReducer} from "./contestList/reducers";
 import {contestReducer} from "./contest/reducers";
 import {modalSelectContestReducer} from "./modalSelectContest/reducers";
+import {criterionListReducer} from "./criterionList/reducers";
+import {performanceListReducer} from "./performanceList/reducers";
+import {categoryListReducer} from "./categoryList/reducers";
+import {modalSelectCriteriaReducer} from "./modalSelectCriteria/reducers";
+import {modalSelectCategoriesReducer} from "./modalSelectCategories/reducers";
 
 
 export default combineReducers({
@@ -16,4 +21,9 @@ export default combineReducers({
     contestList: contestListReducer,
     contest: contestReducer,
     modalSelectContest: modalSelectContestReducer,
+    performanceList: performanceListReducer,
+    criterionList: criterionListReducer,
+    categoryList: categoryListReducer,
+    modalSelectCriteria: modalSelectCriteriaReducer,
+    modalSelectCategories: modalSelectCategoriesReducer
 })

@@ -139,7 +139,7 @@ export default class UserList extends Component {
         this.props.history.push('/user/' + user.id);
     }
 
-    createNewUser(){
+    createNewUser() {
         this.changeUserIdForEdit(-1);
         this.changeUserForEdit({});
         this.props.history.push('/user/-1');
@@ -177,17 +177,33 @@ export default class UserList extends Component {
                                 </ButtonGroup>
                             </td> : <td hidden/>}
                     </tr>
-                    <tr>
-                        <th>№</th>
-                        <th>Фото</th>
-                        <th>Логін</th>
-                        <th>Пароль</th>
-                        <th>ПIБ</th>
-                        <th>Посада</th>
-                        <th>Конкурси</th>
-                        <th>Рівень доступу</th>
-                        <th>Дії</th>
-                    </tr>
+
+                    {localStorage.getItem("gradingServiceAccessToken")
+                    && localStorage.getItem("role")
+                    && (localStorage.getItem("role").match("PARTICIPANT")) ?
+                        <tr>
+                            <th>№</th>
+                            <th>Фото</th>
+                            <th>Логін</th>
+                            <th>Пароль</th>
+                            <th>ПIБ</th>
+                            <th>Заклад</th>
+                            <th>Конкурси</th>
+                            <th>Дії</th>
+                        </tr>
+                        :
+                        <tr>
+                            <th>№</th>
+                            <th>Фото</th>
+                            <th>Логін</th>
+                            <th>Пароль</th>
+                            <th>ПIБ</th>
+                            <th>Посада (Заклад)</th>
+                            <th>Конкурси</th>
+                            <th>Рівень доступу</th>
+                            <th>Дії</th>
+                        </tr>
+                    }
                     </thead>
                     <tbody>
                     {
@@ -223,12 +239,19 @@ export default class UserList extends Component {
                                                            height={"71"}/>{'  '}{contest.name}
                                                 </FormLabel>
                                             ))}
-                                            <Button className="btn btn-sm btn-outline-warning"
-                                                    onClick={this.changeUserIdForChangeContest.bind(this, user)}>
-                                                Обрати конкурси
-                                            </Button>
+                                            {localStorage.getItem("gradingServiceAccessToken")
+                                            && localStorage.getItem("role")
+                                            && (!localStorage.getItem("role").match("PARTICIPANT")) ?
+                                                <Button className="btn btn-sm btn-outline-warning"
+                                                        onClick={this.changeUserIdForChangeContest.bind(this, user)}>
+                                                    Обрати конкурси
+                                                </Button> :
+                                                ''}
                                         </td>
-                                        <td>{user.role}</td>
+                                        {localStorage.getItem("gradingServiceAccessToken")
+                                        && localStorage.getItem("role")
+                                        && (localStorage.getItem("role").match("PARTICIPANT")) ?
+                                            <td/> : <td>{user.role}</td>}
                                         <td>
                                             <ButtonGroup>
                                                 <Button className="btn btn-sm btn-outline-warning"

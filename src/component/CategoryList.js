@@ -1,14 +1,14 @@
 import React, {Component} from "react";
-import {Button, Table, Image, ButtonGroup, FormLabel} from "react-bootstrap";
+import {Button, Table, ButtonGroup, FormLabel, Form} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {CONTESTS_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
+import {CATEGORIES_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
+import ModalSelectContestContainer from "../container/ModalSelectContestContainer";
 import ModalSelectCriteriaContainer from "../container/ModalSelectCriteriaContainer";
-import ModalSelectCategoriesContainer from "../container/ModalSelectCategoriesContainer";
 
-export default class ContestList extends Component {
+export default class CategoryList extends Component {
 
     constructor(props) {
         super(props);
@@ -20,26 +20,18 @@ export default class ContestList extends Component {
         };
     }
 
-    changeContests(contests) {
-        this.props.changeContests(contests);
-    }
-
-    changeContestIdForEdit(contestId) {
-        this.props.changeContestIdForEdit(contestId);
-    }
-
-    getAllContests = () => {
+    getAllCategories = () => {
         this.setState({
             isLoading: true,
         })
-        axios.get(getEndpoint(CONTESTS_MAIN_ENDPOINT), getOptions())
+        axios.get(getEndpoint(CATEGORIES_MAIN_ENDPOINT), getOptions())
             .then(response => {
                 this.setState({
                     error: false,
                     isLoading: false,
                 })
                 console.log(response.data);
-                this.changeContests(response.data);
+                this.props.changeCategories(response.data);
             })
             .catch((error) => {
                 console.error("Error" + error);
@@ -60,7 +52,7 @@ export default class ContestList extends Component {
                     this.setState({
                         show: true,
                         error: true,
-                        message: 'Помилка при завантаженні списка конкурсів',
+                        message: 'Помилка при завантаженні списку категорій',
                         isLoading: false,
                     });
                 }
@@ -69,25 +61,37 @@ export default class ContestList extends Component {
     }
 
     componentDidMount() {
-        this.getAllContests();
+        this.getAllCategories();
     }
 
-    deleteContest(contestId) {
+    changeCategoryIdForChangeCriteria(category) {
+        this.props.setSelectedCriteria(category.criteria);
+        let originalSelectedCriteriaIds = [];
+        category.criteria.forEach(criterion => {
+            originalSelectedCriteriaIds.push(criterion.id);
+        })
+        this.props.setOriginalSelectedCriteriaIds(originalSelectedCriteriaIds);
+        this.props.changeCategoryIdForChangeCriteria(category.id);
+        this.props.changeCategoryForChangeCriteria(category);
+        this.props.changeShowModal(true);
+    }
+
+    deleteCategory(categoryId) {
         const conf = window.confirm(`Ви впевнені?`);
         if (conf) {
             this.setState({
                 isLoading: true,
             })
-            axios.delete(getEndpoint(CONTESTS_MAIN_ENDPOINT) + "/" + contestId, getOptions())
+            axios.delete(getEndpoint(CATEGORIES_MAIN_ENDPOINT) + "/" + categoryId, getOptions())
                 .then(response => {
                     this.setState({
                         show: true,
                         error: false,
                         isLoading: false,
-                        message: 'Конкурс було видалено'
+                        message: 'Категорія була видалена'
                     })
                     console.log(response.data);
-                    this.getAllContests();
+                    this.getAllCategories();
                     setTimeout(() => this.setState({"show": false}), 3000);
                 })
                 .catch((error) => {
@@ -109,7 +113,7 @@ export default class ContestList extends Component {
                         this.setState({
                             show: true,
                             error: true,
-                            message: 'Помилка при завантаженні списка конкурсів',
+                            message: 'Помилка при видаленні категорії',
                             isLoading: false,
                         });
                     }
@@ -118,25 +122,16 @@ export default class ContestList extends Component {
         }
     }
 
-    changeContestIdForChangeCategories(contest) {
-        this.props.setSelectedCategories(contest.categories);
-        let originalSelectedCategoriesIds = [];
-        contest.categories.forEach(category => {
-            originalSelectedCategoriesIds.push(category.id);
-        })
-        this.props.setOriginalSelectedCategoriesIds(originalSelectedCategoriesIds);
-        this.props.changeContestIdForChangeCategories(contest.id);
-        this.props.changeContestForChangeCategories(contest);
-        this.props.changeShowModal(true);
-    }
-
-    selectContest(contestId) {
-        this.changeContestIdForEdit(contestId);
-        this.props.history.push('/contest/' + contestId);
+    selectCategory(category) {
+        if (!category.id) {
+            category.id = -1;
+        }
+        this.props.changeCategoryForEdit(category);
+        this.props.history.push('/categories/' + category.id);
     }
 
     render() {
-        const {contests} = this.props;
+        const {categories} = this.props;
         const {show, error, message, isLoading} = this.state;
         return (
             <div>
@@ -147,42 +142,41 @@ export default class ContestList extends Component {
                         message={message}
                     />
                 </div>
-                <ModalSelectCategoriesContainer/>
+                <ModalSelectCriteriaContainer/>
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>{localStorage.getItem("gradingServiceAccessToken")
                     && localStorage.getItem("role")
                     && (localStorage.getItem("role").match("ADMINISTRATOR")
                         || localStorage.getItem("role").match("MANAGER")) ?
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
+                        <td colSpan={"100"}>
                             <ButtonGroup>
                                 <Button className="btn btn-sm btn-outline-warning"
                                         style={{"background": "transparent"}}
-                                        onClick={this.selectContest.bind(this, -1)}>
+                                        onClick={this.selectCategory.bind(this, {})}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                    Додати конкурс
+                                    Додати нову категорію
                                 </Button>{' '}
                             </ButtonGroup>
                         </td> : <td hidden/>}
                     </tr>
                     <tr>
                         <th>№</th>
-                        <th>Фото</th>
                         <th>Назва</th>
-                        <th>Деталі</th>
-                        <th>Категорії</th>
-                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
+                        <th>Опис</th>
+                        <th>Критерії</th>
+                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && (localStorage.getItem("role").match("ADMINISTRATOR") || localStorage.getItem("role").match("MANAGER")) ?
                             <th>Дії</th> : <th hidden/>}
                     </tr>
                     </thead>
                     <tbody>
                     {
-                        contests.length === 0 && !isLoading ?
+                        categories.length === 0 && !isLoading ?
                             <tr align={"center"}>
-                                <td colSpan={"11"}>Конкурси у БД відсутні
+                                <td colSpan={"11"}>Категорії у БД відсутні
                                     {'  '}
                                     <Button size={"sm"} variant={"outline-danger"}
-                                            onClick={this.getAllContests}><FontAwesomeIcon
+                                            onClick={this.getAllCategories}><FontAwesomeIcon
                                         icon={faRedo}/></Button>
                                 </td>
                             </tr> :
@@ -190,41 +184,38 @@ export default class ContestList extends Component {
                                 <tr align={"center"}>
                                     <td colSpan={"11"}>Завантаження...</td>
                                 </tr> :
-                                contests.map((contest, count) => (
-                                    <tr key={contest.id}>
+                                categories.map((category, count) => (
+                                    <tr key={category.id}>
                                         <td>{count + 1}</td>
-                                        <td><Image src={contest.photo} rounded width={"50"} height={"71"}/>
-                                        </td>
-                                        <td>{contest.name}</td>
-                                        <td>{contest.description}</td>
+                                        <td>{category.name}</td>
+                                        <td>{category.description}</td>
                                         <td>
-                                            {contest.categories.map((category, count) => (
-                                                <FormLabel key={count}>
-                                                    {category.name}
-                                                </FormLabel>
+                                            {category.criteria.map((criterion, count) => (
+                                                <div key={criterion.id}><FormLabel key={count}>
+                                                    {criterion.name}
+                                                </FormLabel><br/></div>
                                             ))}
                                             {localStorage.getItem("gradingServiceAccessToken")
                                             && localStorage.getItem("role")
                                             && (localStorage.getItem("role").match("ADMINISTRATOR") ||
                                                 localStorage.getItem("role").match("MANAGER")) ?
                                                 <Button className="btn btn-sm btn-outline-warning"
-                                                        onClick={this.changeContestIdForChangeCategories.bind(this, contest)}>
-                                                    Обрати категорії
+                                                        onClick={this.changeCategoryIdForChangeCriteria.bind(this, category)}>
+                                                    Обрати критерії
                                                 </Button> :
                                                 ''}
                                         </td>
 
 
-
-                                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
+                                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && (localStorage.getItem("role").match("ADMINISTRATOR") || localStorage.getItem("role").match("MANAGER")) ?
                                             <td>
                                                 <ButtonGroup>
                                                     <Button className="btn btn-sm btn-outline-warning"
-                                                            onClick={this.selectContest.bind(this, contest.id)}>
+                                                            onClick={this.selectCategory.bind(this, category)}>
                                                         <FontAwesomeIcon icon={faAddressBook}/>
                                                     </Button>{' '}
                                                     <Button size={"sm"} variant={"outline-danger"}
-                                                            onClick={this.deleteContest.bind(this, contest.id)}><FontAwesomeIcon
+                                                            onClick={this.deleteCategory.bind(this, category.id)}><FontAwesomeIcon
                                                         icon={faTrash}/></Button>{' '}
                                                 </ButtonGroup>
                                             </td>

@@ -23,6 +23,12 @@ export function getEndpoint(type) {
             return host + "users";
         case CONTESTS_MAIN_ENDPOINT:
             return host + "contests";
+        case PERFORMANCES_MAIN_ENDPOINT:
+            return host + "performances";
+        case CRITERIA_MAIN_ENDPOINT:
+            return host + "criteria";
+        case CATEGORIES_MAIN_ENDPOINT:
+            return host + "categories";
         default:
             return null;
     }
@@ -32,10 +38,11 @@ export const CONFIGURATIONS_MAIN_ENDPOINT = 'CONFIGURATIONS_MAIN_ENDPOINT';
 export const USERS_ROLE_LIST_GET_ENDPOINT = 'USERS_ROLE_LIST_GET_ENDPOINT';
 export const USERS_MAIN_ENDPOINT = 'USERS_MAIN_ENDPOINT';
 export const CONTESTS_MAIN_ENDPOINT = 'CONTESTS_MAIN_ENDPOINT';
+export const PERFORMANCES_MAIN_ENDPOINT = 'PERFORMANCES_MAIN_ENDPOINT';
+export const CRITERIA_MAIN_ENDPOINT = 'CRITERIA_MAIN_ENDPOINT';
+export const CATEGORIES_MAIN_ENDPOINT = 'CATEGORIES_MAIN_ENDPOINT';
 
 export default class Welcome extends Component {
-
-
     componentDidMount() {
         localStorage.setItem("host", "http://localhost:8095/")
     }

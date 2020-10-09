@@ -1,14 +1,12 @@
 import React, {Component} from "react";
-import {Button, Table, Image, ButtonGroup, FormLabel} from "react-bootstrap";
+import {Button, Table, ButtonGroup} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {CONTESTS_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
+import {getEndpoint, getOptions, PERFORMANCES_MAIN_ENDPOINT} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
-import ModalSelectCriteriaContainer from "../container/ModalSelectCriteriaContainer";
-import ModalSelectCategoriesContainer from "../container/ModalSelectCategoriesContainer";
 
-export default class ContestList extends Component {
+export default class PerformanceList extends Component {
 
     constructor(props) {
         super(props);
@@ -20,26 +18,18 @@ export default class ContestList extends Component {
         };
     }
 
-    changeContests(contests) {
-        this.props.changeContests(contests);
-    }
-
-    changeContestIdForEdit(contestId) {
-        this.props.changeContestIdForEdit(contestId);
-    }
-
-    getAllContests = () => {
+    getAllPerformances = () => {
         this.setState({
             isLoading: true,
         })
-        axios.get(getEndpoint(CONTESTS_MAIN_ENDPOINT), getOptions())
+        axios.get(getEndpoint(PERFORMANCES_MAIN_ENDPOINT), getOptions())
             .then(response => {
                 this.setState({
                     error: false,
                     isLoading: false,
                 })
                 console.log(response.data);
-                this.changeContests(response.data);
+                this.props.changePerformances(response.data);
             })
             .catch((error) => {
                 console.error("Error" + error);
@@ -69,22 +59,22 @@ export default class ContestList extends Component {
     }
 
     componentDidMount() {
-        this.getAllContests();
+        this.getAllPerformances();
     }
 
-    deleteContest(contestId) {
+    deletePerformance(performanceId) {
         const conf = window.confirm(`Ви впевнені?`);
         if (conf) {
             this.setState({
                 isLoading: true,
             })
-            axios.delete(getEndpoint(CONTESTS_MAIN_ENDPOINT) + "/" + contestId, getOptions())
+            axios.delete(getEndpoint(PERFORMANCES_MAIN_ENDPOINT) + "/" + performanceId, getOptions())
                 .then(response => {
                     this.setState({
                         show: true,
                         error: false,
                         isLoading: false,
-                        message: 'Конкурс було видалено'
+                        message: 'Конкурсний номер було видалено'
                     })
                     console.log(response.data);
                     this.getAllContests();
@@ -109,7 +99,7 @@ export default class ContestList extends Component {
                         this.setState({
                             show: true,
                             error: true,
-                            message: 'Помилка при завантаженні списка конкурсів',
+                            message: 'Помилка при видаленні конкурсу',
                             isLoading: false,
                         });
                     }
@@ -118,25 +108,16 @@ export default class ContestList extends Component {
         }
     }
 
-    changeContestIdForChangeCategories(contest) {
-        this.props.setSelectedCategories(contest.categories);
-        let originalSelectedCategoriesIds = [];
-        contest.categories.forEach(category => {
-            originalSelectedCategoriesIds.push(category.id);
-        })
-        this.props.setOriginalSelectedCategoriesIds(originalSelectedCategoriesIds);
-        this.props.changeContestIdForChangeCategories(contest.id);
-        this.props.changeContestForChangeCategories(contest);
-        this.props.changeShowModal(true);
-    }
-
-    selectContest(contestId) {
-        this.changeContestIdForEdit(contestId);
-        this.props.history.push('/contest/' + contestId);
+    selectPerformance(performance) {
+        if (!performance.id) {
+            performance.id = -1;
+        }
+        this.props.changePerformanceForEdit(performance);
+        this.props.history.push('/performance/' + performance.id);
     }
 
     render() {
-        const {contests} = this.props;
+        const {performances} = this.props;
         const {show, error, message, isLoading} = this.state;
         return (
             <div>
@@ -147,42 +128,45 @@ export default class ContestList extends Component {
                         message={message}
                     />
                 </div>
-                <ModalSelectCategoriesContainer/>
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>{localStorage.getItem("gradingServiceAccessToken")
                     && localStorage.getItem("role")
                     && (localStorage.getItem("role").match("ADMINISTRATOR")
-                        || localStorage.getItem("role").match("MANAGER")) ?
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
+                        || localStorage.getItem("role").match("MANAGER")
+                        || localStorage.getItem("role").match("PARTICIPANT")) ?
+                        <td colSpan={"100"}>
                             <ButtonGroup>
                                 <Button className="btn btn-sm btn-outline-warning"
                                         style={{"background": "transparent"}}
-                                        onClick={this.selectContest.bind(this, -1)}>
+                                        onClick={this.selectPerformance.bind(this, {})}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                    Додати конкурс
+                                    Додати конкурсний номер
                                 </Button>{' '}
                             </ButtonGroup>
                         </td> : <td hidden/>}
                     </tr>
                     <tr>
                         <th>№</th>
-                        <th>Фото</th>
+                        {localStorage.getItem("gradingServiceAccessToken")
+                        && localStorage.getItem("role")
+                        && (!localStorage.getItem("role").match("PARTICIPANT")) ?
+                            <th>Учасник</th> : ''}
                         <th>Назва</th>
-                        <th>Деталі</th>
-                        <th>Категорії</th>
+                        <th>Опис</th>
+                        <th>Конкурс</th>
                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
                             <th>Дії</th> : <th hidden/>}
                     </tr>
                     </thead>
                     <tbody>
                     {
-                        contests.length === 0 && !isLoading ?
+                        performances.length === 0 && !isLoading ?
                             <tr align={"center"}>
-                                <td colSpan={"11"}>Конкурси у БД відсутні
+                                <td colSpan={"11"}>Конкурсні номери у БД відсутні
                                     {'  '}
                                     <Button size={"sm"} variant={"outline-danger"}
-                                            onClick={this.getAllContests}><FontAwesomeIcon
+                                            onClick={this.getAllPerformances}><FontAwesomeIcon
                                         icon={faRedo}/></Button>
                                 </td>
                             </tr> :
@@ -190,41 +174,25 @@ export default class ContestList extends Component {
                                 <tr align={"center"}>
                                     <td colSpan={"11"}>Завантаження...</td>
                                 </tr> :
-                                contests.map((contest, count) => (
-                                    <tr key={contest.id}>
+                                performances.map((performance, count) => (
+                                    <tr key={performance.id}>
                                         <td>{count + 1}</td>
-                                        <td><Image src={contest.photo} rounded width={"50"} height={"71"}/>
-                                        </td>
-                                        <td>{contest.name}</td>
-                                        <td>{contest.description}</td>
-                                        <td>
-                                            {contest.categories.map((category, count) => (
-                                                <FormLabel key={count}>
-                                                    {category.name}
-                                                </FormLabel>
-                                            ))}
-                                            {localStorage.getItem("gradingServiceAccessToken")
-                                            && localStorage.getItem("role")
-                                            && (localStorage.getItem("role").match("ADMINISTRATOR") ||
-                                                localStorage.getItem("role").match("MANAGER")) ?
-                                                <Button className="btn btn-sm btn-outline-warning"
-                                                        onClick={this.changeContestIdForChangeCategories.bind(this, contest)}>
-                                                    Обрати категорії
-                                                </Button> :
-                                                ''}
-                                        </td>
-
-
-
+                                        {localStorage.getItem("gradingServiceAccessToken")
+                                        && localStorage.getItem("role")
+                                        && (!localStorage.getItem("role").match("PARTICIPANT")) ?
+                                            <td>{performance.user.lastName + ' ' + performance.user.firstName + ' ' + performance.user.secondName}</td> : ''}
+                                        <td>{performance.name}</td>
+                                        <td>{performance.description}</td>
+                                        <td>{performance.contest ? performance.contest.name : ''}</td>
                                         {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
                                             <td>
                                                 <ButtonGroup>
                                                     <Button className="btn btn-sm btn-outline-warning"
-                                                            onClick={this.selectContest.bind(this, contest.id)}>
+                                                            onClick={this.selectPerformance.bind(this, performance)}>
                                                         <FontAwesomeIcon icon={faAddressBook}/>
                                                     </Button>{' '}
                                                     <Button size={"sm"} variant={"outline-danger"}
-                                                            onClick={this.deleteContest.bind(this, contest.id)}><FontAwesomeIcon
+                                                            onClick={this.deletePerformance.bind(this, performance.id)}><FontAwesomeIcon
                                                         icon={faTrash}/></Button>{' '}
                                                 </ButtonGroup>
                                             </td>

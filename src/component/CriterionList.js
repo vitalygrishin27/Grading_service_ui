@@ -1,14 +1,12 @@
 import React, {Component} from "react";
-import {Button, Table, Image, ButtonGroup, FormLabel} from "react-bootstrap";
+import {Button, Table, ButtonGroup} from "react-bootstrap";
 import axios from 'axios';
 import ToastMessage from "./ToastMessage";
-import {CONTESTS_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
+import {CRITERIA_MAIN_ENDPOINT, getEndpoint, getOptions} from "./Welcome";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAddressBook, faPlusCircle, faTrash, faRedo} from "@fortawesome/free-solid-svg-icons";
-import ModalSelectCriteriaContainer from "../container/ModalSelectCriteriaContainer";
-import ModalSelectCategoriesContainer from "../container/ModalSelectCategoriesContainer";
 
-export default class ContestList extends Component {
+export default class CriterionList extends Component {
 
     constructor(props) {
         super(props);
@@ -20,26 +18,18 @@ export default class ContestList extends Component {
         };
     }
 
-    changeContests(contests) {
-        this.props.changeContests(contests);
-    }
-
-    changeContestIdForEdit(contestId) {
-        this.props.changeContestIdForEdit(contestId);
-    }
-
-    getAllContests = () => {
+    getAllCriteria = () => {
         this.setState({
             isLoading: true,
         })
-        axios.get(getEndpoint(CONTESTS_MAIN_ENDPOINT), getOptions())
+        axios.get(getEndpoint(CRITERIA_MAIN_ENDPOINT), getOptions())
             .then(response => {
                 this.setState({
                     error: false,
                     isLoading: false,
                 })
                 console.log(response.data);
-                this.changeContests(response.data);
+                this.props.changeCriteria(response.data);
             })
             .catch((error) => {
                 console.error("Error" + error);
@@ -60,7 +50,7 @@ export default class ContestList extends Component {
                     this.setState({
                         show: true,
                         error: true,
-                        message: 'Помилка при завантаженні списка конкурсів',
+                        message: 'Помилка при завантаженні списку критеріїв',
                         isLoading: false,
                     });
                 }
@@ -69,25 +59,25 @@ export default class ContestList extends Component {
     }
 
     componentDidMount() {
-        this.getAllContests();
+        this.getAllCriteria();
     }
 
-    deleteContest(contestId) {
+    deleteCriterion(criterionId) {
         const conf = window.confirm(`Ви впевнені?`);
         if (conf) {
             this.setState({
                 isLoading: true,
             })
-            axios.delete(getEndpoint(CONTESTS_MAIN_ENDPOINT) + "/" + contestId, getOptions())
+            axios.delete(getEndpoint(CRITERIA_MAIN_ENDPOINT) + "/" + criterionId, getOptions())
                 .then(response => {
                     this.setState({
                         show: true,
                         error: false,
                         isLoading: false,
-                        message: 'Конкурс було видалено'
+                        message: 'Критерій оцінювання було видалено'
                     })
                     console.log(response.data);
-                    this.getAllContests();
+                    this.getAllCriteria();
                     setTimeout(() => this.setState({"show": false}), 3000);
                 })
                 .catch((error) => {
@@ -109,7 +99,7 @@ export default class ContestList extends Component {
                         this.setState({
                             show: true,
                             error: true,
-                            message: 'Помилка при завантаженні списка конкурсів',
+                            message: 'Помилка при видаленні критерія',
                             isLoading: false,
                         });
                     }
@@ -118,25 +108,16 @@ export default class ContestList extends Component {
         }
     }
 
-    changeContestIdForChangeCategories(contest) {
-        this.props.setSelectedCategories(contest.categories);
-        let originalSelectedCategoriesIds = [];
-        contest.categories.forEach(category => {
-            originalSelectedCategoriesIds.push(category.id);
-        })
-        this.props.setOriginalSelectedCategoriesIds(originalSelectedCategoriesIds);
-        this.props.changeContestIdForChangeCategories(contest.id);
-        this.props.changeContestForChangeCategories(contest);
-        this.props.changeShowModal(true);
-    }
-
-    selectContest(contestId) {
-        this.changeContestIdForEdit(contestId);
-        this.props.history.push('/contest/' + contestId);
+    selectCriterion(criterion) {
+        if (!criterion.id) {
+            criterion.id = -1;
+        }
+        this.props.changeCriterionForEdit(criterion);
+        this.props.history.push('/criteria/' + criterion.id);
     }
 
     render() {
-        const {contests} = this.props;
+        const {criteria} = this.props;
         const {show, error, message, isLoading} = this.state;
         return (
             <div>
@@ -147,42 +128,39 @@ export default class ContestList extends Component {
                         message={message}
                     />
                 </div>
-                <ModalSelectCategoriesContainer/>
                 <Table striped bordered hover variant={"dark"} style={{"width": "50%", 'display': 'table'}}>
                     <thead>
                     <tr>{localStorage.getItem("gradingServiceAccessToken")
                     && localStorage.getItem("role")
                     && (localStorage.getItem("role").match("ADMINISTRATOR")
                         || localStorage.getItem("role").match("MANAGER")) ?
-                        <td colSpan={localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ? "5" : "4"}>
+                        <td colSpan={"100"}>
                             <ButtonGroup>
                                 <Button className="btn btn-sm btn-outline-warning"
                                         style={{"background": "transparent"}}
-                                        onClick={this.selectContest.bind(this, -1)}>
+                                        onClick={this.selectCriterion.bind(this, {})}>
                                     <FontAwesomeIcon icon={faPlusCircle}/>{'  '}
-                                    Додати конкурс
+                                    Додати новий критерій оцінювання
                                 </Button>{' '}
                             </ButtonGroup>
                         </td> : <td hidden/>}
                     </tr>
                     <tr>
                         <th>№</th>
-                        <th>Фото</th>
                         <th>Назва</th>
-                        <th>Деталі</th>
-                        <th>Категорії</th>
-                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
+                        <th>Опис</th>
+                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && (localStorage.getItem("role").match("ADMINISTRATOR") || localStorage.getItem("role").match("MANAGER")) ?
                             <th>Дії</th> : <th hidden/>}
                     </tr>
                     </thead>
                     <tbody>
                     {
-                        contests.length === 0 && !isLoading ?
+                        criteria.length === 0 && !isLoading ?
                             <tr align={"center"}>
-                                <td colSpan={"11"}>Конкурси у БД відсутні
+                                <td colSpan={"11"}>Критерії оцінювання у БД відсутні
                                     {'  '}
                                     <Button size={"sm"} variant={"outline-danger"}
-                                            onClick={this.getAllContests}><FontAwesomeIcon
+                                            onClick={this.getAllCriteria}><FontAwesomeIcon
                                         icon={faRedo}/></Button>
                                 </td>
                             </tr> :
@@ -190,41 +168,20 @@ export default class ContestList extends Component {
                                 <tr align={"center"}>
                                     <td colSpan={"11"}>Завантаження...</td>
                                 </tr> :
-                                contests.map((contest, count) => (
-                                    <tr key={contest.id}>
+                                criteria.map((criterion, count) => (
+                                    <tr key={criterion.id}>
                                         <td>{count + 1}</td>
-                                        <td><Image src={contest.photo} rounded width={"50"} height={"71"}/>
-                                        </td>
-                                        <td>{contest.name}</td>
-                                        <td>{contest.description}</td>
-                                        <td>
-                                            {contest.categories.map((category, count) => (
-                                                <FormLabel key={count}>
-                                                    {category.name}
-                                                </FormLabel>
-                                            ))}
-                                            {localStorage.getItem("gradingServiceAccessToken")
-                                            && localStorage.getItem("role")
-                                            && (localStorage.getItem("role").match("ADMINISTRATOR") ||
-                                                localStorage.getItem("role").match("MANAGER")) ?
-                                                <Button className="btn btn-sm btn-outline-warning"
-                                                        onClick={this.changeContestIdForChangeCategories.bind(this, contest)}>
-                                                    Обрати категорії
-                                                </Button> :
-                                                ''}
-                                        </td>
-
-
-
-                                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && localStorage.getItem("role").match("ADMINISTRATOR") ?
+                                        <td>{criterion.name}</td>
+                                        <td>{criterion.description}</td>
+                                        {localStorage.getItem("gradingServiceAccessToken") && localStorage.getItem("role") && (localStorage.getItem("role").match("ADMINISTRATOR") || localStorage.getItem("role").match("MANAGER")) ?
                                             <td>
                                                 <ButtonGroup>
                                                     <Button className="btn btn-sm btn-outline-warning"
-                                                            onClick={this.selectContest.bind(this, contest.id)}>
+                                                            onClick={this.selectCriterion.bind(this, criterion)}>
                                                         <FontAwesomeIcon icon={faAddressBook}/>
                                                     </Button>{' '}
                                                     <Button size={"sm"} variant={"outline-danger"}
-                                                            onClick={this.deleteContest.bind(this, contest.id)}><FontAwesomeIcon
+                                                            onClick={this.deleteCriterion.bind(this, criterion.id)}><FontAwesomeIcon
                                                         icon={faTrash}/></Button>{' '}
                                                 </ButtonGroup>
                                             </td>
